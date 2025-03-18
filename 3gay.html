@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Tài Xỉu - Sunwin Style (Tỷ lệ Tài/Xỉu & Bảng)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            color: #fff;
+            font-family: 'Poppins', sans-serif;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        }
+
+        .header {
+            background: linear-gradient(45deg, #ff6f00, #ffca28);
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 6px 15px rgba(255, 152, 0, 0.5);
+        }
+
+        .header h1 {
+            font-size: 32px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .balance {
+            font-size: 20px;
+            margin-top: 15px;
+            font-weight: 600;
+        }
+
+        #reset-button {
+            margin-top: 15px;
+            padding: 12px 25px;
+            background: linear-gradient(45deg, #00c6ff, #0072ff);
+            border: none;
+            border-radius: 25px;
+            color: #fff;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 198, 255, 0.4);
+        }
+
+        #reset-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0, 198, 255, 0.6);
+        }
+
+        #reset-button:active {
+            transform: translateY(1px);
+            box-shadow: 0 2px 10px rgba(0, 198, 255, 0.3);
+        }
+
+        .game-area {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+            gap: 25px;
+        }
+
+        .bet-section {
+            flex: 1;
+            background: linear-gradient(135deg, #1a1a1a, #2d2d2d);
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .bet-section h2 {
+            color: #ffeb3b;
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .bet-form input, .bet-form select {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            font-size: 16px;
+            background: rgba(255, 255, 255, 0.05);
+            color: #fff;
+            transition: border-color 0.3s ease;
+        }
+
+        .bet-form input:focus, .bet-form select:focus {
+            border-color: #ffca28;
+            outline: none;
+        }
+
+        .bet-form button {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: 600;
+            background: linear-gradient(45deg, #ff416c, #ff4b2b);
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 65, 108, 0.4);
+        }
+
+        .bet-form button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(255, 65, 108, 0.6);
+        }
+
+        .bet-form button:active {
+            transform: translateY(1px);
+            box-shadow: 0 2px 10px rgba(255, 65, 108, 0.3);
+        }
+
+        #all-in-button {
+            background: linear-gradient(45deg, #ff00cc, #ff8a00);
+            box-shadow: 0 4px 15px rgba(255, 0, 204, 0.4);
+        }
+
+        #all-in-button:hover {
+            box-shadow: 0 6px 20px rgba(255, 0, 204, 0.6);
+        }
+
+        .dice-area {
+            flex: 2;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 400px;
+        }
+
+        #time-bar {
+            width: 100%;
+            height: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            overflow: hidden;
+            position: absolute;
+            top: 0;
+        }
+
+        #progress {
+            height: 100%;
+            background: linear-gradient(90deg, #00ff87, #00c6ff);
+            width: 100%;
+            transition: width 0.1s linear;
+            box-shadow: 0 0 10px rgba(0, 255, 135, 0.7);
+        }
+
+        @keyframes shake {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            25% { transform: translate(-5px, 5px) rotate(2deg); }
+            50% { transform: translate(5px, -5px) rotate(-2deg); }
+            75% { transform: translate(-5px, 5px) rotate(2deg); }
+            100% { transform: translate(0, 0) rotate(0deg); }
+        }
+
+        .shaking {
+            animation: shake 0.2s infinite;
+            box-shadow: 0 0 20px rgba(255, 152, 0, 0.8);
+        }
+
+        #dish {
+            width: 220px;
+            height: 220px;
+            background: linear-gradient(135deg, #4b4b4b, #1a1a1a);
+            border-radius: 50%;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), inset 0 0 20px rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        #dish:hover {
+            transform: scale(1.05);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6), 0 0 30px rgba(255, 152, 0, 0.5);
+        }
+
+        #cover {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, #fff, #e0e0e0);
+            border-radius: 50%;
+            position: absolute;
+            cursor: grab;
+            box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.4), 0 5px 15px rgba(0, 0, 0, 0.3);
+            transition: transform 0.1s ease;
+        }
+
+        #cover.dragging {
+            cursor: grabbing;
+            box-shadow: 0 0 25px rgba(255, 255, 255, 0.7);
+        }
+
+        #cover.open {
+            transform: scale(0.8) translate(-50%, -160%);
+            transition: transform 0.8s ease;
+        }
+
+        #dice-container {
+            display: flex;
+            gap: 20px;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        #dice-container.visible {
+            opacity: 1;
+        }
+
+        .dice {
+            width: 60px;
+            height: 60px;
+            background: #fff;
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 40px;
+            color: #000;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            animation: roll 0.5s ease;
+            transition: transform 0.3s ease;
+        }
+
+        .dice:hover {
+            transform: rotate(10deg) scale(1.1);
+        }
+
+        @keyframes roll {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        #result {
+            font-size: 26px;
+            margin-top: 25px;
+            text-align: center;
+            font-weight: 600;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+        }
+
+        #result.win {
+            color: #00ff87;
+            text-shadow: 0 0 10px rgba(0, 255, 135, 0.7);
+        }
+
+        #result.lose {
+            color: #ff416c;
+            text-shadow: 0 0 10px rgba(255, 65, 108, 0.7);
+        }
+
+        .history {
+            margin-top: 30px;
+            background: linear-gradient(135deg, #1a1a1a, #2d2d2d);
+            padding: 20px;
+            border-radius: 15px;
+            max-height: 220px;
+            overflow-y: auto;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .history h3 {
+            color: #ffeb3b;
+            font-size: 22px;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .history-item {
+            font-size: 16px;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            transition: background 0.3s ease;
+        }
+
+        .history-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .history-item.win {
+            color: #00ff87;
+        }
+
+        .history-item.lose {
+            color: #ff416c;
+        }
+
+        #cancel-button {
+            margin-top: 15px;
+            padding: 12px 25px;
+            background: linear-gradient(45deg, #ff416c, #ff4b2b);
+            border: none;
+            border-radius: 25px;
+            color: #fff;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 65, 108, 0.4);
+        }
+
+        #cancel-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(255, 65, 108, 0.6);
+        }
+
+        #cancel-button:active {
+            transform: translateY(1px);
+            box-shadow: 0 2px 10px rgba(255, 65, 108, 0.3);
+        }
+
+        /* CSS cho bảng tỷ lệ */
+        .stats-container {
+            margin-top: 20px;
+            background: linear-gradient(135deg, #1a1a1a, #2d2d2d);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            width: 100%;
+        }
+
+        .stats-container h3 {
+            color: #ffeb3b;
+            font-size: 22px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .stats-container h3 span {
+            font-size: 18px;
+        }
+
+        #stats-table {
+            display: none; /* Ẩn mặc định */
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 16px;
+        }
+
+        #stats-table.visible {
+            display: table;
+        }
+
+        #stats-table th, #stats-table td {
+            padding: 10px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        #stats-table th {
+            background: rgba(255, 255, 255, 0.05);
+            color: #ffca28;
+        }
+
+        #stats-table td {
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Sun Thua</h1>
+            <div class="balance">Số dư: <span id="balance">1000000</span> VNĐ</div>
+            <button id="reset-button">Reset Game</button>
+        </div>
+
+        <div class="game-area">
+            <div class="bet-section">
+                <h2>Đặt cược</h2>
+                <form id="bet-form" class="bet-form">
+                    <input type="number" id="bet" placeholder="Nhập số tiền cược" required min="1000" step="1000">
+                    <select id="choice" required>
+                        <option value="" disabled selected>Chọn Tài hoặc Xỉu</option>
+                        <option value="tai">Tài</option>
+                        <option value="xiu">Xỉu</option>
+                    </select>
+                    <select id="payout" required>
+                        <option value="1.8">Tỷ lệ: 1.8x</option>
+                        <option value="2" selected>Tỷ lệ: 2x</option>
+                        <option value="2.5">Tỷ lệ: 2.5x</option>
+                    </select>
+                    <button type="submit">Đặt cược</button>
+                    <button type="button" id="all-in-button">All In</button>
+                </form>
+            </div>
+
+            <div class="dice-area">
+                <div id="time-bar">
+                    <div id="progress"></div>
+                </div>
+                <div id="dish">
+                    <div id="cover"></div>
+                    <div id="dice-container">
+                        <div class="dice" id="dice1">⚀</div>
+                        <div class="dice" id="dice2">⚀</div>
+                        <div class="dice" id="dice3">⚀</div>
+                    </div>
+                </div>
+                <button id="cancel-button" style="display: none;">Hủy cược</button>
+            </div>
+        </div>
+
+        <div id="result">Đặt cược và kéo nắp trắng để xem tỷ lệ Tài/Xỉu!</div>
+
+        <div class="history">
+            <h3>Lịch sử cược</h3>
+            <div id="history-list"></div>
+        </div>
+
+        <div class="stats-container">
+            <h3 id="toggle-stats">Thống kê tỷ lệ Tài/Xỉu <span>▼</span></h3>
+            <table id="stats-table">
+                <thead>
+                    <tr>
+                        <th>Tổng số lượt</th>
+                        <th>Số lần Tài</th>
+                        <th>Số lần Xỉu</th>
+                        <th>Tỷ lệ Tài</th>
+                        <th>Tỷ lệ Xỉu</th>
+                    </tr>
+                </thead>
+                <tbody id="stats-body">
+                    <tr>
+                        <td id="total-rounds">0</td>
+                        <td id="tai-count">0</td>
+                        <td id="xiu-count">0</td>
+                        <td id="tai-rate">0%</td>
+                        <td id="xiu-rate">0%</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Giả lập âm thanh -->
+    <audio id="shake-sound" src="https://www.soundjay.com/buttons/beep-01a.mp3"></audio>
+    <audio id="win-sound" src="https://www.soundjay.com/buttons/beep-07.mp3"></audio>
+    <audio id="lose-sound" src="https://www.soundjay.com/buttons/beep-02.mp3"></audio>
+
+    <script>
+        const form = document.getElementById('bet-form');
+        const progress = document.getElementById('progress');
+        const result = document.getElementById('result');
+        const dish = document.getElementById('dish');
+        const cover = document.getElementById('cover');
+        const diceContainer = document.getElementById('dice-container');
+        const dice1 = document.getElementById('dice1');
+        const dice2 = document.getElementById('dice2');
+        const dice3 = document.getElementById('dice3');
+        const balanceElement = document.getElementById('balance');
+        const historyList = document.getElementById('history-list');
+        const cancelButton = document.getElementById('cancel-button');
+        const allInButton = document.getElementById('all-in-button');
+        const submitButton = form.querySelector('button[type="submit"]');
+        const resetButton = document.getElementById('reset-button');
+        const shakeSound = document.getElementById('shake-sound');
+        const winSound = document.getElementById('win-sound');
+        const loseSound = document.getElementById('lose-sound');
+        const toggleStats = document.getElementById('toggle-stats');
+        const statsTable = document.getElementById('stats-table');
+
+        let balance = 1000000;
+        let total = 0;
+        let diceValues = [0, 0, 0];
+        let betAmount = 0;
+        let betChoice = '';
+        let peekLevel = 0;
+        let isDragging = false;
+        let startX = 0;
+        let startY = 0;
+        let buffTai = 0; // Tỷ lệ buff cho Tài
+        let buffXiu = 0; // Tỷ lệ buff cho Xỉu
+        let totalRounds = 0; // Tổng số lượt
+        let taiCount = 0; // Số lần Tài
+        let xiuCount = 0; // Số lần Xỉu
+        const BUFF_INCREMENT = 0.1; // Mỗi lần nhấn tăng 10%
+        const MAX_BUFF = 1; // Tỷ lệ buff tối đa là 100%
+        const dragThresholds = [50, 100, 150, 200]; // Ngưỡng kéo để xem từng xúc xắc và mở bát
+        const diceIcons = ["⚀", "⚁", "⚂", "⚃", "⚄", "⚅"];
+
+        // Hàm tính tỷ lệ Tài/Xỉu dự đoán dựa trên xúc xắc đã lộ
+        function calculateOdds(diceValues, revealedCount) {
+            let currentTotal = diceValues.slice(0, revealedCount).reduce((a, b) => a + b, 0);
+            let remainingDice = 3 - revealedCount;
+            let minPossible = currentTotal + remainingDice; // Tối thiểu khi các xúc xắc còn lại đều là 1
+            let maxPossible = currentTotal + remainingDice * 6; // Tối đa khi các xúc xắc còn lại đều là 6
+
+            if (revealedCount === 3) {
+                return currentTotal >= 11 ? "Tài 100%" : "Xỉu 100%";
+            }
+
+            let taiOdds = 0;
+            if (maxPossible >= 11) {
+                taiOdds = Math.min(100, Math.round(((maxPossible - 10) / (maxPossible - minPossible + 1)) * 100));
+            }
+            let xiuOdds = 100 - taiOdds;
+
+            return `Tài ${taiOdds}% - Xỉu ${xiuOdds}%`;
+        }
+
+        // Hàm tạo xúc xắc với buff cộng dồn
+        function generateDice(buffTai, buffXiu) {
+            const dice = [];
+            for (let i = 0; i < 3; i++) {
+                let roll = Math.random();
+                if (buffTai > 0 && roll < buffTai) {
+                    roll = Math.random() * 0.5 + 0.5; // Bias về 4-6
+                } else if (buffXiu > 0 && roll < buffXiu) {
+                    roll = Math.random() * 0.5; // Bias về 1-3
+                }
+                dice.push(Math.floor(roll * 6) + 1);
+            }
+            return dice;
+        }
+
+        // Hàm cập nhật bảng thống kê
+        function updateStats(outcome) {
+            totalRounds++;
+            if (outcome === "tai") taiCount++;
+            else if (outcome === "xiu") xiuCount++;
+
+            const taiRate = totalRounds > 0 ? ((taiCount / totalRounds) * 100).toFixed(2) : 0;
+            const xiuRate = totalRounds > 0 ? ((xiuCount / totalRounds) * 100).toFixed(2) : 0;
+
+            document.getElementById('total-rounds').textContent = totalRounds;
+            document.getElementById('tai-count').textContent = taiCount;
+            document.getElementById('xiu-count').textContent = xiuCount;
+            document.getElementById('tai-rate').textContent = `${taiRate}%`;
+            document.getElementById('xiu-rate').textContent = `${xiuRate}%`;
+        }
+
+        function updateBalance(amount) {
+            balance += amount;
+            balanceElement.textContent = balance.toLocaleString();
+        }
+
+        function addToHistory(bet, choice, outcome, total, winnings) {
+            const item = document.createElement('div');
+            item.classList.add('history-item');
+            item.classList.add(winnings > 0 ? 'win' : 'lose');
+            item.textContent = `Cược: ${bet.toLocaleString()} VNĐ | ${choice.toUpperCase()} | Tổng: ${total} | ${winnings > 0 ? 'Thắng' : 'Thua'} ${Math.abs(winnings).toLocaleString()} VNĐ`;
+            historyList.prepend(item);
+        }
+
+        function resetUI() {
+            diceContainer.style.opacity = 0;
+            cover.classList.remove('open', 'dragging');
+            cover.style.transform = 'translate(0, 0)';
+            cancelButton.style.display = 'none';
+            dish.classList.remove('shaking');
+            peekLevel = 0;
+            total = 0;
+            diceValues = [0, 0, 0];
+            dice1.style.display = 'block';
+            dice2.style.display = 'block';
+            dice3.style.display = 'block';
+            result.textContent = "Đặt cược và kéo nắp trắng để xem tỷ lệ Tài/Xỉu!";
+            result.classList.remove("win", "lose");
+        }
+
+        function startCountdown() {
+            let startTime = performance.now();
+            const duration = 5000;
+
+            function updateProgress(timestamp) {
+                const elapsed = timestamp - startTime;
+                const progressPercent = Math.max(0, 100 - (elapsed / duration) * 100);
+                progress.style.width = `${progressPercent}%`;
+
+                if (progressPercent > 0) {
+                    requestAnimationFrame(updateProgress);
+                }
+            }
+
+            requestAnimationFrame(updateProgress);
+        }
+
+        form.addEventListener('submit', (event) => {
+            event.preventDefault();
+            const betInput = document.getElementById('bet');
+            betAmount = parseInt(betInput.value);
+            betChoice = document.getElementById('choice').value;
+            const payoutRate = parseFloat(document.getElementById('payout').value);
+
+            if (balance < 1000) {
+                result.textContent = "Số dư không đủ! Reset game để tiếp tục.";
+                result.classList.remove("win", "lose");
+                return;
+            }
+
+            if (!betAmount || betAmount < 1000 || betAmount > balance || !betChoice) {
+                result.textContent = "Vui lòng nhập số tiền cược hợp lệ (tối thiểu 1000 VNĐ) và chọn Tài/Xỉu!";
+                result.classList.remove("win", "lose");
+                return;
+            }
+
+            updateBalance(-betAmount);
+            result.textContent = "Đang lắc xúc xắc...";
+            result.classList.remove("win", "lose");
+            resetUI();
+            dish.classList.add('shaking');
+            submitButton.disabled = true;
+            shakeSound.play();
+
+            startCountdown();
+            setTimeout(() => {
+                dish.classList.remove('shaking');
+                submitButton.disabled = false;
+                diceValues = generateDice(buffTai, buffXiu); // Tạo xúc xắc với buff cộng dồn
+
+                dice1.textContent = diceIcons[diceValues[0] - 1];
+                dice2.textContent = diceIcons[diceValues[1] - 1];
+                dice3.textContent = diceIcons[diceValues[2] - 1];
+
+                result.textContent = "Kéo nắp trắng để xem từng xúc xắc và tỷ lệ Tài/Xỉu!";
+                cancelButton.style.display = 'block';
+            }, 5000);
+        });
+
+        allInButton.addEventListener('click', () => {
+            const betInput = document.getElementById('bet');
+            betChoice = document.getElementById('choice').value;
+
+            if (!betChoice) {
+                result.textContent = "Vui lòng chọn Tài hoặc Xỉu trước khi All In!";
+                result.classList.remove("win", "lose");
+                return;
+            }
+
+            if (balance < 1000) {
+                result.textContent = "Số dư không đủ để All In (tối thiểu 1000 VNĐ)!";
+                result.classList.remove("win", "lose");
+                return;
+            }
+
+            betInput.value = balance;
+            form.dispatchEvent(new Event('submit'));
+        });
+
+        cover.addEventListener('mousedown', (e) => {
+            if (diceValues[0] !== 0 && !cover.classList.contains('open')) {
+                isDragging = true;
+                startX = e.clientX;
+                startY = e.clientY;
+                cover.classList.add('dragging');
+            }
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (isDragging && total === 0) {
+                const currentX = e.clientX;
+                const currentY = e.clientY;
+                const distance = Math.sqrt(
+                    Math.pow(currentX - startX, 2) + Math.pow(currentY - startY, 2)
+                ); // Khoảng cách kéo bất kỳ hướng nào
+
+                // Di chuyển nắp theo chuột (giới hạn khoảng cách tối đa là 200px)
+                const moveX = Math.min(Math.max(currentX - startX, -200), 200);
+                const moveY = Math.min(Math.max(currentY - startY, -200), 200);
+                cover.style.transform = `translate(${moveX}px, ${moveY}px)`;
+                diceContainer.style.opacity = 1;
+
+                if (distance >= dragThresholds[0] && peekLevel < 1) {
+                    peekLevel = 1;
+                    dice2.style.display = 'none';
+                    dice3.style.display = 'none';
+                    result.textContent = `Xúc xắc 1: ${diceValues[0]} | Tỷ lệ: ${calculateOdds(diceValues, 1)}`;
+                } else if (distance >= dragThresholds[1] && peekLevel < 2) {
+                    peekLevel = 2;
+                    dice2.style.display = 'block';
+                    dice3.style.display = 'none';
+                    result.textContent = `Xúc xắc 1: ${diceValues[0]}, Xúc xắc 2: ${diceValues[1]} | Tỷ lệ: ${calculateOdds(diceValues, 2)}`;
+                } else if (distance >= dragThresholds[2] && peekLevel < 3) {
+                    peekLevel = 3;
+                    dice3.style.display = 'block';
+                    result.textContent = `Xúc xắc: ${diceValues[0]}, ${diceValues[1]}, ${diceValues[2]} | Tỷ lệ: ${calculateOdds(diceValues, 3)}`;
+                } else if (distance >= dragThresholds[3] && peekLevel < 4) {
+                    peekLevel = 4;
+                    cover.classList.add('open');
+                    diceContainer.classList.add('visible');
+                    dice1.style.display = 'block';
+                    dice2.style.display = 'block';
+                    dice3.style.display = 'block';
+
+                    total = diceValues[0] + diceValues[1] + diceValues[2];
+                    const outcome = total >= 11 ? "tai" : "xiu";
+                    const payoutRate = parseFloat(document.getElementById('payout').value);
+                    const winnings = betChoice === outcome ? betAmount * payoutRate : -betAmount;
+
+                    updateBalance(winnings);
+                    addToHistory(betAmount, betChoice, outcome, total, winnings);
+                    updateStats(outcome); // Cập nhật bảng thống kê
+
+                    if (betChoice === outcome) {
+                        result.textContent = `Tổng: ${total} - Bạn thắng ${(betAmount * payoutRate).toLocaleString()} VNĐ!`;
+                        result.classList.add("win");
+                        winSound.play();
+                    } else {
+                        result.textContent = `Tổng: ${total} - Bạn thua ${betAmount.toLocaleString()} VNĐ!`;
+                        result.classList.add("lose");
+                        loseSound.play();
+                    }
+
+                    cancelButton.style.display = 'none';
+                    isDragging = false; // Dừng kéo khi mở bát
+                }
+            }
+        });
+
+        document.addEventListener('mouseup', () => {
+            if (isDragging && total === 0) {
+                // Nếu chưa kéo đủ để mở bát, nắp sẽ quay về vị trí ban đầu
+                if (!cover.classList.contains('open')) {
+                    cover.style.transform = 'translate(0, 0)';
+                }
+            }
+            isDragging = false;
+            cover.classList.remove('dragging');
+        });
+
+        cancelButton.addEventListener('click', () => {
+            if (total > 0) return;
+
+            updateBalance(betAmount * 0.9);
+            result.textContent = `Đã hủy cược, hoàn lại ${Math.floor(betAmount * 0.9).toLocaleString()} VNĐ!`;
+            result.classList.remove("win", "lose");
+            resetUI();
+        });
+
+        resetButton.addEventListener('click', () => {
+            balance = 1000000;
+            balanceElement.textContent = balance.toLocaleString();
+            historyList.innerHTML = '';
+            buffTai = 0; // Reset buff Tài
+            buffXiu = 0; // Reset buff Xỉu
+            totalRounds = 0; // Reset thống kê
+            taiCount = 0;
+            xiuCount = 0;
+            updateStats(null); // Cập nhật lại bảng về 0
+            resetUI();
+        });
+
+        // Sự kiện nhấn phím để cộng dồn buff
+        document.addEventListener('keydown', (e) => {
+            if (e.key === '1' && !submitButton.disabled) {
+                buffTai = Math.min(buffTai + BUFF_INCREMENT, MAX_BUFF); // Tăng buff Tài, tối đa 100%
+                buffXiu = 0; // Reset buff Xỉu khi buff Tài
+            } else if (e.key === '2' && !submitButton.disabled) {
+                buffXiu = Math.min(buffXiu + BUFF_INCREMENT, MAX_BUFF); // Tăng buff Xỉu, tối đa 100%
+                buffTai = 0; // Reset buff Tài khi buff Xỉu
+            } else if (e.key === 'Enter' && !submitButton.disabled) {
+                form.dispatchEvent(new Event('submit'));
+            } else if (e.key === 'r' || e.key === 'R') {
+                resetButton.click();
+            }
+        });
+
+        // Sự kiện bật/tắt bảng thống kê
+        toggleStats.addEventListener('click', () => {
+            statsTable.classList.toggle('visible');
+            const arrow = toggleStats.querySelector('span');
+            arrow.textContent = statsTable.classList.contains('visible') ? '▲' : '▼';
+        });
+    </script>
+</body>
+</html>
