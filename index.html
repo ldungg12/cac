@@ -1,0 +1,1377 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Tài Xỉu - Sunwin Ultra (2000 Lines)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            color: #fff;
+            font-family: 'Poppins', sans-serif;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            transition: background 1s ease;
+            position: relative;
+        }
+
+        body.light-theme {
+            background: linear-gradient(135deg, #e0e0e0, #f5f5f5, #ffffff);
+            color: #333;
+        }
+
+        body.neon-theme {
+            background: linear-gradient(135deg, #1a0033, #6600cc, #00ffcc);
+            color: #fff;
+        }
+
+        .background-animation {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1), transparent);
+            animation: pulse 8s infinite;
+            z-index: -1;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 0.6; }
+            50% { transform: scale(1.3); opacity: 0.3; }
+            100% { transform: scale(1); opacity: 0.6; }
+        }
+
+        .particle-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .particle {
+            position: absolute;
+            width: 5px;
+            height: 5px;
+            background: #ffca28;
+            border-radius: 50%;
+            animation: particleFall 3s linear infinite;
+        }
+
+        @keyframes particleFall {
+            0% { transform: translateY(-100vh); opacity: 1; }
+            100% { transform: translateY(100vh); opacity: 0; }
+        }
+
+        .container {
+            width: 95%;
+            max-width: 1600px;
+            margin: 50px auto;
+            padding: 40px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 30px;
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(15px);
+            position: relative;
+            z-index: 1;
+            transform-style: preserve-3d;
+        }
+
+        .header {
+            background: linear-gradient(45deg, #ff6f00, #ffca28);
+            padding: 30px;
+            border-radius: 25px;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(255, 152, 0, 0.7);
+            position: relative;
+            overflow: hidden;
+            transform: translateZ(20px);
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -60%;
+            left: -60%;
+            width: 220%;
+            height: 220%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.4), transparent);
+            animation: glow 6s infinite;
+        }
+
+        @keyframes glow {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .header h1 {
+            font-size: 40px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            text-shadow: 0 3px 8px rgba(0, 0, 0, 0.4);
+        }
+
+        .balance {
+            font-size: 24px;
+            margin-top: 25px;
+            font-weight: 600;
+            background: rgba(0, 0, 0, 0.25);
+            padding: 15px 25px;
+            border-radius: 20px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .currency {
+            margin-left: 20px;
+        }
+
+        #level-display {
+            font-size: 20px;
+            margin-top: 15px;
+            color: #00ff87;
+            text-shadow: 0 0 12px rgba(0, 255, 135, 0.8);
+        }
+
+        .header-buttons {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        #reset-button, #theme-toggle, #auto-play-button, #multiplayer-toggle {
+            padding: 15px 35px;
+            background: linear-gradient(45deg, #00c6ff, #0072ff);
+            border: none;
+            border-radius: 30px;
+            color: #fff;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            box-shadow: 0 5px 20px rgba(0, 198, 255, 0.5);
+            transform: translateZ(10px);
+        }
+
+        #reset-button:hover, #theme-toggle:hover, #auto-play-button:hover, #multiplayer-toggle:hover {
+            transform: translateY(-5px) translateZ(15px);
+            box-shadow: 0 8px 25px rgba(0, 198, 255, 0.7);
+        }
+
+        #reset-button:active, #theme-toggle:active, #auto-play-button:active, #multiplayer-toggle:active {
+            transform: translateY(2px) translateZ(5px);
+            box-shadow: 0 3px 15px rgba(0, 198, 255, 0.3);
+        }
+
+        .game-area {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 50px;
+            gap: 40px;
+        }
+
+        .bet-section {
+            flex: 1;
+            background: linear-gradient(135deg, #1a1a1a, #2d2d2d);
+            padding: 35px;
+            border-radius: 25px;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
+            transition: transform 0.4s ease;
+            transform: translateZ(10px);
+        }
+
+        .bet-section:hover {
+            transform: scale(1.03) translateZ(15px);
+        }
+
+        .bet-section h2 {
+            color: #ffeb3b;
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 30px;
+            text-align: center;
+            text-shadow: 0 3px 8px rgba(0, 0, 0, 0.4);
+        }
+
+        .bet-form input, .bet-form select {
+            width: 100%;
+            padding: 18px;
+            margin: 20px 0;
+            border: 2px solid rgba(255, 255, 255, 0.25);
+            border-radius: 20px;
+            font-size: 20px;
+            background: rgba(255, 255, 255, 0.15);
+            color: #fff;
+            transition: all 0.4s ease;
+        }
+
+        .bet-form input:focus, .bet-form select:focus {
+            border-color: #ffca28;
+            box-shadow: 0 0 15px rgba(255, 202, 40, 0.6);
+            outline: none;
+        }
+
+        .bet-form button {
+            width: 100%;
+            padding: 18px;
+            margin: 20px 0;
+            border: none;
+            border-radius: 35px;
+            font-size: 20px;
+            font-weight: 700;
+            background: linear-gradient(45deg, #ff416c, #ff4b2b);
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            box-shadow: 0 6px 25px rgba(255, 65, 108, 0.6);
+            transform: translateZ(5px);
+        }
+
+        .bet-form button:hover {
+            transform: translateY(-5px) translateZ(10px);
+            box-shadow: 0 10px 30px rgba(255, 65, 108, 0.8);
+        }
+
+        .bet-form button:active {
+            transform: translateY(2px) translateZ(0px);
+            box-shadow: 0 4px 20px rgba(255, 65, 108, 0.4);
+        }
+
+        #all-in-button {
+            background: linear-gradient(45deg, #ff00cc, #ff8a00);
+            box-shadow: 0 6px 25px rgba(255, 0, 204, 0.6);
+        }
+
+        #all-in-button:hover {
+            box-shadow: 0 10px 30px rgba(255, 0, 204, 0.8);
+        }
+
+        .dice-area {
+            flex: 2;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 500px;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.08), transparent);
+            border-radius: 25px;
+            transform: translateZ(10px);
+        }
+
+        #time-bar {
+            width: 100%;
+            height: 15px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            overflow: hidden;
+            position: absolute;
+            top: 15px;
+            box-shadow: 0 0 12px rgba(255, 255, 255, 0.3);
+        }
+
+        #progress {
+            height: 100%;
+            background: linear-gradient(90deg, #00ff87, #00c6ff);
+            width: 100%;
+            transition: width 0.1s linear;
+            box-shadow: 0 0 20px rgba(0, 255, 135, 0.9);
+        }
+
+        @keyframes shake {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            20% { transform: translate(-10px, 10px) rotate(4deg); }
+            40% { transform: translate(10px, -10px) rotate(-4deg); }
+            60% { transform: translate(-10px, 10px) rotate(4deg); }
+            80% { transform: translate(10px, -10px) rotate(-4deg); }
+            100% { transform: translate(0, 0) rotate(0deg); }
+        }
+
+        .shaking {
+            animation: shake 0.4s infinite;
+            box-shadow: 0 0 30px rgba(255, 152, 0, 1);
+        }
+
+        @keyframes screenShake {
+            0% { transform: translate(0, 0); }
+            25% { transform: translate(-5px, 5px); }
+            50% { transform: translate(5px, -5px); }
+            75% { transform: translate(-5px, 5px); }
+            100% { transform: translate(0, 0); }
+        }
+
+        .screen-shake {
+            animation: screenShake 0.5s ease;
+        }
+
+        #dish {
+            width: 280px;
+            height: 280px;
+            background: linear-gradient(135deg, #4b4b4b, #1a1a1a);
+            border-radius: 50%;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7), inset 0 0 30px rgba(255, 255, 255, 0.2);
+            transition: all 0.5s ease;
+            transform: translateZ(20px);
+        }
+
+        #dish:hover {
+            transform: scale(1.1) translateZ(25px);
+            box-shadow: 0 25px 70px rgba(0, 0, 0, 0.8), 0 0 50px rgba(255, 152, 0, 0.7);
+        }
+
+        #cover {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, #fff, #e0e0e0);
+            border-radius: 50%;
+            position: absolute;
+            cursor: grab;
+            box-shadow: inset 0 0 25px rgba(0, 0, 0, 0.6), 0 10px 25px rgba(0, 0, 0, 0.5);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        #cover.dragging {
+            cursor: grabbing;
+            box-shadow: 0 0 40px rgba(255, 255, 255, 0.9);
+        }
+
+        #cover.open {
+            transform: scale(0.7) translate(-70%, -200%);
+            transition: transform 1.2s ease;
+        }
+
+        #dice-container {
+            display: none;
+            gap: 30px;
+            transition: opacity 0.8s ease;
+        }
+
+        #dice-container.visible {
+            display: flex;
+            opacity: 1;
+        }
+
+        .dice {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #fff, #e0e0e0);
+            border-radius: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 56px;
+            color: #000;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            animation: roll 0.8s ease;
+            transition: transform 0.5s ease;
+            border: 3px solid #ffca28;
+            transform: translateZ(15px);
+        }
+
+        .dice:hover {
+            transform: rotate(20deg) scale(1.2) translateZ(20px);
+            box-shadow: 0 12px 30px rgba(255, 202, 40, 0.7);
+        }
+
+        @keyframes roll {
+            0% { transform: rotate(0deg) scale(0.7); }
+            50% { transform: rotate(180deg) scale(1.2); }
+            100% { transform: rotate(360deg) scale(1); }
+        }
+
+        #result {
+            font-size: 34px;
+            margin-top: 40px;
+            text-align: center;
+            font-weight: 700;
+            text-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.25);
+            border-radius: 20px;
+            transition: all 0.4s ease;
+            transform: translateZ(10px);
+        }
+
+        #result.win {
+            color: #00ff87;
+            text-shadow: 0 0 20px rgba(0, 255, 135, 0.9);
+            background: rgba(0, 255, 135, 0.15);
+        }
+
+        #result.lose {
+            color: #ff416c;
+            text-shadow: 0 0 20px rgba(255, 65, 108, 0.9);
+            background: rgba(255, 65, 108, 0.15);
+        }
+
+        .history {
+            margin-top: 50px;
+            background: linear-gradient(135deg, #1a1a1a, #2d2d2d);
+            padding: 30px;
+            border-radius: 25px;
+            max-height: 350px;
+            overflow-y: auto;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
+            transition: transform 0.4s ease;
+            transform: translateZ(10px);
+        }
+
+        .history:hover {
+            transform: scale(1.02) translateZ(15px);
+        }
+
+        .history h3 {
+            color: #ffeb3b;
+            font-size: 30px;
+            font-weight: 700;
+            margin-bottom: 25px;
+            text-shadow: 0 3px 8px rgba(0, 0, 0, 0.4);
+        }
+
+        .history-item {
+            font-size: 20px;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            transition: background 0.4s ease;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .history-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .history-item.win {
+            color: #00ff87;
+            text-shadow: 0 0 6px rgba(0, 255, 135, 0.6);
+        }
+
+        .history-item.lose {
+            color: #ff416c;
+            text-shadow: 0 0 6px rgba(255, 65, 108, 0.6);
+        }
+
+        #cancel-button {
+            margin-top: 25px;
+            padding: 18px 35px;
+            background: linear-gradient(45deg, #ff416c, #ff4b2b);
+            border: none;
+            border-radius: 35px;
+            color: #fff;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            box-shadow: 0 6px 25px rgba(255, 65, 108, 0.6);
+            transform: translateZ(5px);
+        }
+
+        #cancel-button:hover {
+            transform: translateY(-5px) translateZ(10px);
+            box-shadow: 0 10px 30px rgba(255, 65, 108, 0.8);
+        }
+
+        #cancel-button:active {
+            transform: translateY(2px) translateZ(0px);
+            box-shadow: 0 4px 20px rgba(255, 65, 108, 0.4);
+        }
+
+        .stats-container {
+            margin-top: 50px;
+            background: linear-gradient(135deg, #1a1a1a, #2d2d2d);
+            padding: 30px;
+            border-radius: 25px;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
+            width: 100%;
+            transition: transform 0.4s ease;
+            transform: translateZ(10px);
+        }
+
+        .stats-container:hover {
+            transform: scale(1.02) translateZ(15px);
+        }
+
+        .stats-container h3 {
+            color: #ffeb3b;
+            font-size: 30px;
+            font-weight: 700;
+            margin-bottom: 25px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            text-shadow: 0 3px 8px rgba(0, 0, 0, 0.4);
+        }
+
+        .stats-container h3 span {
+            font-size: 24px;
+            transition: transform 0.4s ease;
+        }
+
+        .stats-container h3:hover span {
+            transform: rotate(180deg);
+        }
+
+        #stats-table {
+            display: none;
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 20px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        #stats-table.visible {
+            display: table;
+        }
+
+        #stats-table th, #stats-table td {
+            padding: 18px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        #stats-table th {
+            background: linear-gradient(45deg, #ffca28, #ffeb3b);
+            color: #1a1a1a;
+            font-weight: 700;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+        }
+
+        #stats-table td {
+            color: #fff;
+            transition: background 0.4s ease;
+        }
+
+        #stats-table td:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .bonus-notice {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            background: linear-gradient(45deg, #00ff87, #00c6ff);
+            padding: 20px 30px;
+            border-radius: 20px;
+            color: #fff;
+            font-weight: 700;
+            box-shadow: 0 6px 25px rgba(0, 255, 135, 0.6);
+            animation: bounce 1.2s infinite;
+            z-index: 1000;
+            display: none;
+        }
+
+        @keyframes bounce {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+            100% { transform: translateY(0); }
+        }
+
+        .quest-container {
+            margin-top: 50px;
+            background: linear-gradient(135deg, #1a1a1a, #2d2d2d);
+            padding: 30px;
+            border-radius: 25px;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
+            width: 100%;
+            transform: translateZ(10px);
+        }
+
+        .quest-container h3 {
+            color: #ffeb3b;
+            font-size: 30px;
+            font-weight: 700;
+            margin-bottom: 25px;
+            text-shadow: 0 3px 8px rgba(0, 0, 0, 0.4);
+        }
+
+        .quest-item {
+            font-size: 20px;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            display: flex;
+            justify-content: space-between;
+            transition: background 0.4s ease;
+        }
+
+        .quest-item.completed {
+            color: #00ff87;
+            text-shadow: 0 0 6px rgba(0, 255, 135, 0.6);
+        }
+
+        .language-select {
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 15px;
+            color: #fff;
+            font-size: 18px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            transform: translateZ(5px);
+        }
+
+        .language-select:hover {
+            background: rgba(255, 255, 255, 0.25);
+        }
+    </style>
+</head>
+<body>
+    <div class="background-animation"></div>
+    <div class="particle-container" id="particle-container"></div>
+    <select id="language-select" class="language-select">
+        <option value="vi">Tiếng Việt</option>
+        <option value="en">English</option>
+        <option value="zh">中文</option>
+    </select>
+    <div class="container">
+        <div class="header">
+            <h1 id="game-title">Sun Thua Ultra</h1>
+            <div class="balance" id="balance-display">
+                <span>Số dư: <span id="balance">1000000</span> VNĐ</span>
+                <span class="currency">Xu: <span id="coins">5000</span></span>
+            </div>
+            <div id="level-display">Level: <span id="player-level">1</span> (Wins: <span id="win-streak">0</span>)</div>
+            <div class="header-buttons">
+                <button id="reset-button">Reset Game</button>
+                <button id="theme-toggle">Toggle Theme</button>
+                <button id="auto-play-button">Auto Play</button>
+                <button id="multiplayer-toggle">Multiplayer</button>
+            </div>
+        </div>
+
+        <div class="game-area">
+            <div class="bet-section">
+                <h2 id="bet-section-title">Đặt cược</h2>
+                <form id="bet-form" class="bet-form">
+                    <input type="number" id="bet" placeholder="Nhập số tiền cược" required min="1000" step="1000">
+                    <select id="choice" required>
+                        <option value="" disabled selected>Chọn Tài hoặc Xỉu</option>
+                        <option value="tai">Tài</option>
+                        <option value="xiu">Xỉu</option>
+                    </select>
+                    <select id="payout" required>
+                        <option value="1.8">Tỷ lệ: 1.8x</option>
+                        <option value="2" selected>Tỷ lệ: 2x</option>
+                        <option value="2.5">Tỷ lệ: 2.5x</option>
+                        <option value="3">Tỷ lệ: 3x</option>
+                        <option value="4">Tỷ lệ: 4x</option>
+                    </select>
+                    <button type="submit" id="bet-button">Đặt cược</button>
+                    <button type="button" id="all-in-button">All In</button>
+                </form>
+            </div>
+
+            <div class="dice-area">
+                <div id="time-bar">
+                    <div id="progress"></div>
+                </div>
+                <div id="dish">
+                    <div id="cover"></div>
+                    <div id="dice-container">
+                        <div class="dice" id="dice1">⚀</div>
+                        <div class="dice" id="dice2">⚀</div>
+                        <div class="dice" id="dice3">⚀</div>
+                    </div>
+                </div>
+                <button id="cancel-button" style="display: none;">Hủy cược</button>
+            </div>
+        </div>
+
+        <div id="result">Đặt cược và kéo nắp trắng để xem tỷ lệ Tài/Xỉu!</div>
+
+        <div class="history">
+            <h3 id="history-title">Lịch sử cược</h3>
+            <div id="history-list"></div>
+        </div>
+
+        <div class="stats-container">
+            <h3 id="stats-title">Thống kê tỷ lệ Tài/Xỉu <span>▼</span></h3>
+            <table id="stats-table">
+                <thead>
+                    <tr>
+                        <th>Tổng số lượt</th>
+                        <th>Số lần Tài</th>
+                        <th>Số lần Xỉu</th>
+                        <th>Tỷ lệ Tài</th>
+                        <th>Tỷ lệ Xỉu</th>
+                        <th>Thắng trung bình</th>
+                        <th>Xu kiếm được</th>
+                    </tr>
+                </thead>
+                <tbody id="stats-body">
+                    <tr>
+                        <td id="total-rounds">0</td>
+                        <td id="tai-count">0</td>
+                        <td id="xiu-count">0</td>
+                        <td id="tai-rate">0%</td>
+                        <td id="xiu-rate">0%</td>
+                        <td id="avg-win">0 VNĐ</td>
+                        <td id="total-coins">0</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="quest-container">
+            <h3 id="quest-title">Nhiệm vụ</h3>
+            <div id="quest-list"></div>
+        </div>
+    </div>
+
+    <div id="bonus-notice" class="bonus-notice">Bonus: <span id="bonus-amount"></span> VNĐ!</div>
+
+    <audio id="shake-sound" src="https://www.soundjay.com/buttons/beep-01a.mp3"></audio>
+    <audio id="win-sound" src="https://www.soundjay.com/buttons/beep-07.mp3"></audio>
+    <audio id="lose-sound" src="https://www.soundjay.com/buttons/beep-02.mp3"></audio>
+    <audio id="big-win-sound" src="https://www.soundjay.com/buttons/beep-08b.mp3"></audio>
+    <audio id="bonus-sound" src="https://www.soundjay.com/buttons/beep-09.mp3"></audio>
+
+    <script>
+        // DOM Elements
+        const form = document.getElementById('bet-form');
+        const progress = document.getElementById('progress');
+        const result = document.getElementById('result');
+        const dish = document.getElementById('dish');
+        const cover = document.getElementById('cover');
+        const diceContainer = document.getElementById('dice-container');
+        const dice1 = document.getElementById('dice1');
+        const dice2 = document.getElementById('dice2');
+        const dice3 = document.getElementById('dice3');
+        const balanceElement = document.getElementById('balance');
+        const coinsElement = document.getElementById('coins');
+        const historyList = document.getElementById('history-list');
+        const cancelButton = document.getElementById('cancel-button');
+        const allInButton = document.getElementById('all-in-button');
+        const submitButton = document.getElementById('bet-button');
+        const resetButton = document.getElementById('reset-button');
+        const themeToggle = document.getElementById('theme-toggle');
+        const autoPlayButton = document.getElementById('auto-play-button');
+        const multiplayerToggle = document.getElementById('multiplayer-toggle');
+        const shakeSound = document.getElementById('shake-sound');
+        const winSound = document.getElementById('win-sound');
+        const loseSound = document.getElementById('lose-sound');
+        const bigWinSound = document.getElementById('big-win-sound');
+        const bonusSound = document.getElementById('bonus-sound');
+        const toggleStats = document.getElementById('stats-title');
+        const statsTable = document.getElementById('stats-table');
+        const bonusNotice = document.getElementById('bonus-notice');
+        const bonusAmount = document.getElementById('bonus-amount');
+        const languageSelect = document.getElementById('language-select');
+        const playerLevelDisplay = document.getElementById('player-level');
+        const winStreakDisplay = document.getElementById('win-streak');
+        const questList = document.getElementById('quest-list');
+        const particleContainer = document.getElementById('particle-container');
+
+        // Game State
+        let balance = 1000000;
+        let coins = 5000;
+        let total = 0;
+        let diceValues = [0, 0, 0];
+        let betAmount = 0;
+        let betChoice = '';
+        let peekLevel = 0;
+        let isDragging = false;
+        let startX = 0;
+        let startY = 0;
+        let buffTai = 0;
+        let buffXiu = 0;
+        let totalRounds = 0;
+        let taiCount = 0;
+        let xiuCount = 0;
+        let totalWinnings = 0;
+        let totalCoins = 0;
+        let winStreak = 0;
+        let playerLevel = 1;
+        let isAutoPlaying = false;
+        let isMultiplayer = false;
+        const BUFF_INCREMENT = 0.05;
+        const MAX_BUFF = 2;
+        const dragThresholds = [70, 140, 210, 280];
+        const diceIcons = ["⚀", "⚁", "⚂", "⚃", "⚄", "⚅"];
+        const themes = ['dark', 'light', 'neon'];
+        let currentThemeIndex = 0;
+
+        // Language Support
+        const languages = {
+            vi: {
+                title: "Sun Thua Ultra",
+                betSection: "Đặt cược",
+                history: "Lịch sử cược",
+                stats: "Thống kê tỷ lệ Tài/Xỉu",
+                quests: "Nhiệm vụ",
+                placeBet: "Đặt cược",
+                allIn: "All In",
+                cancel: "Hủy cược",
+                reset: "Reset Game",
+                autoPlay: "Auto Play",
+                multiplayer: "Multiplayer",
+                startText: "Đặt cược và kéo nắp trắng để xem tỷ lệ Tài/Xỉu!",
+                shakingText: "Đang lắc xúc xắc...",
+                noBalanceText: "Số dư không đủ! Reset game để tiếp tục.",
+                invalidBetText: "Vui lòng nhập số tiền cược hợp lệ (tối thiểu 1000 VNĐ) và chọn Tài/Xỉu!",
+                noChoiceText: "Vui lòng chọn Tài hoặc Xỉu trước khi All In!",
+                noBalanceAllInText: "Số dư không đủ để All In (tối thiểu 1000 VNĐ)!",
+                cancelBetText: "Đã hủy cược, hoàn lại {amount} VNĐ!",
+                winText: "Tổng: {total} - Bạn thắng {amount} VNĐ!",
+                loseText: "Tổng: {total} - Bạn thua {amount} VNĐ!",
+                questWin5: "Thắng 5 lần liên tiếp - Phần thưởng: 100000 VNĐ + 500 Xu",
+                questPlay10: "Chơi 10 ván - Phần thưởng: 50000 VNĐ + 300 Xu",
+                questTai3: "Thắng Tài 3 lần - Phần thưởng: 75000 VNĐ + 400 Xu"
+            },
+            en: {
+                title: "Sun Thua Ultra",
+                betSection: "Place Bet",
+                history: "Bet History",
+                stats: "Tai/Xiu Statistics",
+                quests: "Quests",
+                placeBet: "Place Bet",
+                allIn: "All In",
+                cancel: "Cancel Bet",
+                reset: "Reset Game",
+                autoPlay: "Auto Play",
+                multiplayer: "Multiplayer",
+                startText: "Place a bet and drag the white cover to see Tai/Xiu odds!",
+                shakingText: "Shaking dice...",
+                noBalanceText: "Insufficient balance! Reset game to continue.",
+                invalidBetText: "Please enter a valid bet amount (minimum 1000 VNĐ) and choose Tai/Xiu!",
+                noChoiceText: "Please select Tai or Xiu before going All In!",
+                noBalanceAllInText: "Insufficient balance for All In (minimum 1000 VNĐ)!",
+                cancelBetText: "Bet canceled, refunded {amount} VNĐ!",
+                winText: "Total: {total} - You won {amount} VNĐ!",
+                loseText: "Total: {total} - You lost {amount} VNĐ!",
+                questWin5: "Win 5 times in a row - Reward: 100000 VNĐ + 500 Coins",
+                questPlay10: "Play 10 rounds - Reward: 50000 VNĐ + 300 Coins",
+                questTai3: "Win Tai 3 times - Reward: 75000 VNĐ + 400 Coins"
+            },
+            zh: {
+                title: "Sun Thua Ultra",
+                betSection: "下注",
+                history: "投注历史",
+                stats: "大小统计",
+                quests: "任务",
+                placeBet: "下注",
+                allIn: "全押",
+                cancel: "取消投注",
+                reset: "重置游戏",
+                autoPlay: "自动播放",
+                multiplayer: "多人模式",
+                startText: "下注并拖动白色盖子查看大小赔率！",
+                shakingText: "正在摇骰子...",
+                noBalanceText: "余额不足！重置游戏以继续。",
+                invalidBetText: "请输入有效的投注金额（最低1000越南盾）并选择大小！",
+                noChoiceText: "请在全押前选择大或小！",
+                noBalanceAllInText: "余额不足以全押（最低1000越南盾）！",
+                cancelBetText: "投注已取消，退还 {amount} 越南盾！",
+                winText: "总数: {total} - 你赢了 {amount} 越南盾！",
+                loseText: "总数: {total} - 你输了 {amount} 越南盾！",
+                questWin5: "连胜5次 - 奖励：100000越南盾 + 500币",
+                questPlay10: "玩10轮 - 奖励：50000越南盾 + 300币",
+                questTai3: "赢大3次 - 奖励：75000越南盾 + 400币"
+            }
+        };
+        let currentLang = 'vi';
+
+        // Quests
+        const quests = [
+            { id: 'win5', description: () => languages[currentLang].questWin5, condition: () => winStreak >= 5, reward: { vnd: 100000, coins: 500 }, completed: false },
+            { id: 'play10', description: () => languages[currentLang].questPlay10, condition: () => totalRounds >= 10, reward: { vnd: 50000, coins: 300 }, completed: false },
+            { id: 'tai3', description: () => languages[currentLang].questTai3, condition: () => taiCount >= 3, reward: { vnd: 75000, coins: 400 }, completed: false }
+        ];
+
+        // Particle Effect
+        function createParticles(count) {
+            for (let i = 0; i < count; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
+                particle.style.left = `${Math.random() * 100}%`;
+                particle.style.animationDelay = `${Math.random() * 3}s`;
+                particleContainer.appendChild(particle);
+            }
+        }
+
+        // Language Update
+        function updateLanguage() {
+            const lang = languages[currentLang];
+            document.getElementById('game-title').textContent = lang.title;
+            document.getElementById('bet-section-title').textContent = lang.betSection;
+            document.getElementById('history-title').textContent = lang.history;
+            document.getElementById('stats-title').childNodes[0].textContent = lang.stats;
+            document.getElementById('quest-title').textContent = lang.quests;
+            submitButton.textContent = lang.placeBet;
+            allInButton.textContent = lang.allIn;
+            cancelButton.textContent = lang.cancel;
+            resetButton.textContent = lang.reset;
+            autoPlayButton.textContent = lang.autoPlay;
+            multiplayerToggle.textContent = lang.multiplayer;
+            result.textContent = lang.startText;
+            updateQuests();
+        }
+
+        // Game Logic
+        function calculateOdds(diceValues, revealedCount) {
+            let currentTotal = diceValues.slice(0, revealedCount).reduce((a, b) => a + b, 0);
+            let remainingDice = 3 - revealedCount;
+            let minPossible = currentTotal + remainingDice;
+            let maxPossible = currentTotal + remainingDice * 6;
+
+            if (revealedCount === 3) {
+                return currentTotal >= 11 ? "Tài 100%" : "Xỉu 100%";
+            }
+
+            let taiOdds = 0;
+            if (maxPossible >= 11) {
+                taiOdds = Math.min(100, Math.round(((maxPossible - 10) / (maxPossible - minPossible + 1)) * 100));
+            }
+            let xiuOdds = 100 - taiOdds;
+
+            return `Tài ${taiOdds}% - Xỉu ${xiuOdds}%`;
+        }
+
+        function generateDice(buffTai, buffXiu) {
+            const dice = [];
+            for (let i = 0; i < 3; i++) {
+                let roll = Math.random();
+                if (buffTai > 0 && roll < buffTai) {
+                    roll = Math.random() * 0.5 + 0.5;
+                } else if (buffXiu > 0 && roll < buffXiu) {
+                    roll = Math.random() * 0.5;
+                }
+                dice.push(Math.floor(roll * 6) + 1);
+            }
+            return dice;
+        }
+
+        function generateMultiplayerDice() {
+            const dice = [];
+            for (let i = 0; i < 3; i++) {
+                dice.push(Math.floor(Math.random() * 6) + 1);
+            }
+            return dice;
+        }
+
+        function updateStats(outcome, winnings, coinGain) {
+            totalRounds++;
+            if (outcome === "tai") taiCount++;
+            else if (outcome === "xiu") xiuCount++;
+            totalWinnings += winnings > 0 ? winnings : 0;
+            totalCoins += coinGain;
+
+            const taiRate = totalRounds > 0 ? ((taiCount / totalRounds) * 100).toFixed(2) : 0;
+            const xiuRate = totalRounds > 0 ? ((xiuCount / totalRounds) * 100).toFixed(2) : 0;
+            const avgWin = totalRounds > 0 ? Math.round(totalWinnings / totalRounds) : 0;
+
+            document.getElementById('total-rounds').textContent = totalRounds;
+            document.getElementById('tai-count').textContent = taiCount;
+            document.getElementById('xiu-count').textContent = xiuCount;
+            document.getElementById('tai-rate').textContent = `${taiRate}%`;
+            document.getElementById('xiu-rate').textContent = `${xiuRate}%`;
+            document.getElementById('avg-win').textContent = `${avgWin.toLocaleString()} VNĐ`;
+            document.getElementById('total-coins').textContent = totalCoins;
+        }
+
+        function updateBalance(amount) {
+            balance += amount;
+            balanceElement.textContent = balance.toLocaleString();
+        }
+
+        function updateCoins(amount) {
+            coins += amount;
+            coinsElement.textContent = coins.toLocaleString();
+        }
+
+        function updateLevel() {
+            if (winStreak >= playerLevel * 5) {
+                playerLevel++;
+                playerLevelDisplay.textContent = playerLevel;
+            }
+            winStreakDisplay.textContent = winStreak;
+        }
+
+        function checkBonus() {
+            if (winStreak > 0 && winStreak % 5 === 0) {
+                const bonusVnd = Math.floor(Math.random() * 150000) + 75000;
+                const bonusCoins = Math.floor(Math.random() * 1000) + 500;
+                updateBalance(bonusVnd);
+                updateCoins(bonusCoins);
+                bonusAmount.textContent = `${bonusVnd.toLocaleString()} VNĐ + ${bonusCoins} Xu`;
+                bonusNotice.style.display = 'block';
+                bonusSound.play();
+                setTimeout(() => bonusNotice.style.display = 'none', 4000);
+            }
+        }
+
+        function updateQuests() {
+            questList.innerHTML = '';
+            quests.forEach(quest => {
+                const item = document.createElement('div');
+                item.classList.add('quest-item');
+                if (quest.condition() && !quest.completed) {
+                    quest.completed = true;
+                    updateBalance(quest.reward.vnd);
+                    updateCoins(quest.reward.coins);
+                    bonusAmount.textContent = `${quest.reward.vnd.toLocaleString()} VNĐ + ${quest.reward.coins} Xu`;
+                    bonusNotice.style.display = 'block';
+                    bonusSound.play();
+                    setTimeout(() => bonusNotice.style.display = 'none', 4000);
+                }
+                if (quest.completed) item.classList.add('completed');
+                item.textContent = quest.description();
+                questList.appendChild(item);
+            });
+        }
+
+        function addToHistory(bet, choice, outcome, total, winnings, coinGain) {
+            const item = document.createElement('div');
+            item.classList.add('history-item');
+            item.classList.add(winnings > 0 ? 'win' : 'lose');
+            const time = new Date().toLocaleTimeString();
+            item.innerHTML = `
+                <span>Cược: ${bet.toLocaleString()} VNĐ | ${choice.toUpperCase()} | Tổng: ${total} | ${winnings > 0 ? 'Thắng' : 'Thua'} ${Math.abs(winnings).toLocaleString()} VNĐ | +${coinGain} Xu</span>
+                <span>${time}</span>
+            `;
+            historyList.prepend(item);
+        }
+
+        function resetUI() {
+            diceContainer.classList.remove('visible');
+            diceContainer.style.opacity = 0;
+            cover.classList.remove('open', 'dragging');
+            cover.style.transform = 'translate(0, 0)';
+            cancelButton.style.display = 'none';
+            dish.classList.remove('shaking');
+            peekLevel = 0;
+            total = 0;
+            diceValues = [0, 0, 0];
+            dice1.style.display = 'block';
+            dice2.style.display = 'block';
+            dice3.style.display = 'block';
+            result.textContent = languages[currentLang].startText;
+            result.classList.remove("win", "lose");
+            document.body.classList.remove('screen-shake');
+        }
+
+        function startCountdown() {
+            let startTime = performance.now();
+            const duration = 6000;
+
+            function updateProgress(timestamp) {
+                const elapsed = timestamp - startTime;
+                const progressPercent = Math.max(0, 100 - (elapsed / duration) * 100);
+                progress.style.width = `${progressPercent}%`;
+
+                if (progressPercent > 0) {
+                    requestAnimationFrame(updateProgress);
+                }
+            }
+
+            requestAnimationFrame(updateProgress);
+        }
+
+        function rollDice() {
+            result.textContent = languages[currentLang].shakingText;
+            result.classList.remove("win", "lose");
+            resetUI();
+            dish.classList.add('shaking');
+            submitButton.disabled = true;
+            shakeSound.play();
+
+            startCountdown();
+            setTimeout(() => {
+                dish.classList.remove('shaking');
+                submitButton.disabled = false;
+                diceValues = isMultiplayer ? generateMultiplayerDice() : generateDice(buffTai, buffXiu);
+
+                dice1.textContent = diceIcons[diceValues[0] - 1];
+                dice2.textContent = diceIcons[diceValues[1] - 1];
+                dice3.textContent = diceIcons[diceValues[2] - 1];
+
+                result.textContent = languages[currentLang].startText;
+                cancelButton.style.display = 'block';
+            }, 6000);
+        }
+
+        // Event Listeners
+        form.addEventListener('submit', (event) => {
+            event.preventDefault();
+            const betInput = document.getElementById('bet');
+            betAmount = parseInt(betInput.value);
+            betChoice = document.getElementById('choice').value;
+            const payoutRate = parseFloat(document.getElementById('payout').value);
+
+            if (balance < 1000) {
+                result.textContent = languages[currentLang].noBalanceText;
+                result.classList.remove("win", "lose");
+                return;
+            }
+
+            if (!betAmount || betAmount < 1000 || betAmount > balance || !betChoice) {
+                result.textContent = languages[currentLang].invalidBetText;
+                result.classList.remove("win", "lose");
+                return;
+            }
+
+            updateBalance(-betAmount);
+            rollDice();
+        });
+
+        allInButton.addEventListener('click', () => {
+            const betInput = document.getElementById('bet');
+            betChoice = document.getElementById('choice').value;
+
+            if (!betChoice) {
+                result.textContent = languages[currentLang].noChoiceText;
+                result.classList.remove("win", "lose");
+                return;
+            }
+
+            if (balance < 1000) {
+                result.textContent = languages[currentLang].noBalanceAllInText;
+                result.classList.remove("win", "lose");
+                return;
+            }
+
+            betInput.value = balance;
+            form.dispatchEvent(new Event('submit'));
+        });
+
+        cover.addEventListener('mousedown', (e) => {
+            if (diceValues[0] !== 0 && !cover.classList.contains('open')) {
+                isDragging = true;
+                startX = e.clientX;
+                startY = e.clientY;
+                cover.classList.add('dragging');
+            }
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (isDragging && total === 0) {
+                const currentX = e.clientX;
+                const currentY = e.clientY;
+                const distance = Math.sqrt(
+                    Math.pow(currentX - startX, 2) + Math.pow(currentY - startY, 2)
+                );
+
+                const moveX = Math.min(Math.max(currentX - startX, -280), 280);
+                const moveY = Math.min(Math.max(currentY - startY, -280), 280);
+                cover.style.transform = `translate(${moveX}px, ${moveY}px)`;
+
+                if (distance > 0) {
+                    diceContainer.classList.add('visible');
+                    diceContainer.style.opacity = 1;
+                }
+
+                if (distance >= dragThresholds[0] && peekLevel < 1) {
+                    peekLevel = 1;
+                    dice2.style.display = 'none';
+                    dice3.style.display = 'none';
+                    result.textContent = `Xúc xắc 1: ${diceValues[0]} | Tỷ lệ: ${calculateOdds(diceValues, 1)}`;
+                } else if (distance >= dragThresholds[1] && peekLevel < 2) {
+                    peekLevel = 2;
+                    dice2.style.display = 'block';
+                    dice3.style.display = 'none';
+                    result.textContent = `Xúc xắc 1: ${diceValues[0]}, Xúc xắc 2: ${diceValues[1]} | Tỷ lệ: ${calculateOdds(diceValues, 2)}`;
+                } else if (distance >= dragThresholds[2] && peekLevel < 3) {
+                    peekLevel = 3;
+                    dice3.style.display = 'block';
+                    result.textContent = `Xúc xắc: ${diceValues[0]}, ${diceValues[1]}, ${diceValues[2]} | Tỷ lệ: ${calculateOdds(diceValues, 3)}`;
+                } else if (distance >= dragThresholds[3] && peekLevel < 4) {
+                    peekLevel = 4;
+                    cover.classList.add('open');
+                    diceContainer.classList.add('visible');
+                    dice1.style.display = 'block';
+                    dice2.style.display = 'block';
+                    dice3.style.display = 'block';
+
+                    total = diceValues[0] + diceValues[1] + diceValues[2];
+                    const outcome = total >= 11 ? "tai" : "xiu";
+                    const payoutRate = parseFloat(document.getElementById('payout').value);
+                    const winnings = betChoice === outcome ? betAmount * payoutRate : -betAmount;
+                    const coinGain = betChoice === outcome ? Math.floor(betAmount / 1000) * 10 : 5;
+
+                    updateBalance(winnings);
+                    updateCoins(coinGain);
+                    addToHistory(betAmount, betChoice, outcome, total, winnings, coinGain);
+                    updateStats(outcome, winnings, coinGain);
+                    updateQuests();
+
+                    if (betChoice === outcome) {
+                        winStreak++;
+                        updateLevel();
+                        checkBonus();
+                        result.textContent = languages[currentLang].winText
+                            .replace('{total}', total)
+                            .replace('{amount}', (betAmount * payoutRate).toLocaleString());
+                        result.classList.add("win");
+                        if (winnings > 200000) {
+                            document.body.classList.add('screen-shake');
+                            bigWinSound.play();
+                            createParticles(20);
+                        } else {
+                            winSound.play();
+                            createParticles(10);
+                        }
+                    } else {
+                        winStreak = 0;
+                        updateLevel();
+                        result.textContent = languages[currentLang].loseText
+                            .replace('{total}', total)
+                            .replace('{amount}', betAmount.toLocaleString());
+                        result.classList.add("lose");
+                        loseSound.play();
+                    }
+
+                    cancelButton.style.display = 'none';
+                    isDragging = false;
+                }
+            }
+        });
+
+        document.addEventListener('mouseup', () => {
+            if (isDragging && total === 0) {
+                if (!cover.classList.contains('open')) {
+                    cover.style.transform = 'translate(0, 0)';
+                    diceContainer.classList.remove('visible');
+                    diceContainer.style.opacity = 0;
+                }
+            }
+            isDragging = false;
+            cover.classList.remove('dragging');
+        });
+
+        cancelButton.addEventListener('click', () => {
+            if (total > 0) return;
+
+            const refund = Math.floor(betAmount * 0.9);
+            updateBalance(refund);
+            result.textContent = languages[currentLang].cancelBetText.replace('{amount}', refund.toLocaleString());
+            result.classList.remove("win", "lose");
+            resetUI();
+        });
+
+        resetButton.addEventListener('click', () => {
+            balance = 1000000;
+            coins = 5000;
+            balanceElement.textContent = balance.toLocaleString();
+            coinsElement.textContent = coins.toLocaleString();
+            historyList.innerHTML = '';
+            buffTai = 0;
+            buffXiu = 0;
+            totalRounds = 0;
+            taiCount = 0;
+            xiuCount = 0;
+            totalWinnings = 0;
+            totalCoins = 0;
+            winStreak = 0;
+            playerLevel = 1;
+            quests.forEach(quest => quest.completed = false);
+            updateLevel();
+            updateStats(null, 0, 0);
+            updateQuests();
+            resetUI();
+            isAutoPlaying = false;
+            isMultiplayer = false;
+            autoPlayButton.textContent = languages[currentLang].autoPlay;
+            multiplayerToggle.textContent = languages[currentLang].multiplayer;
+        });
+
+        themeToggle.addEventListener('click', () => {
+            currentThemeIndex = (currentThemeIndex + 1) % themes.length;
+            document.body.classList.remove(...themes);
+            document.body.classList.add(`${themes[currentThemeIndex]}-theme`);
+        });
+
+        autoPlayButton.addEventListener('click', () => {
+            isAutoPlaying = !isAutoPlaying;
+            autoPlayButton.textContent = isAutoPlaying ? "Stop Auto" : languages[currentLang].autoPlay;
+            if (isAutoPlaying) autoPlay();
+        });
+
+        multiplayerToggle.addEventListener('click', () => {
+            isMultiplayer = !isMultiplayer;
+            multiplayerToggle.textContent = isMultiplayer ? "Single Player" : languages[currentLang].multiplayer;
+            result.textContent = isMultiplayer ? "Chế độ Multiplayer: Kết quả từ người chơi khác!" : languages[currentLang].startText;
+        });
+
+        function autoPlay() {
+            if (!isAutoPlaying || balance < 1000) {
+                isAutoPlaying = false;
+                autoPlayButton.textContent = languages[currentLang].autoPlay;
+                return;
+            }
+
+            const betInput = document.getElementById('bet');
+            betInput.value = Math.min(20000, balance);
+            betChoice = Math.random() > 0.5 ? 'tai' : 'xiu';
+            document.getElementById('choice').value = betChoice;
+            form.dispatchEvent(new Event('submit'));
+
+            setTimeout(() => {
+                cover.dispatchEvent(new MouseEvent('mousedown', { clientX: 0, clientY: 0 }));
+                document.dispatchEvent(new MouseEvent('mousemove', { clientX: 350, clientY: 350 }));
+                document.dispatchEvent(new MouseEvent('mouseup'));
+                setTimeout(autoPlay, 7000);
+            }, 7000);
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === '1' && !submitButton.disabled) {
+                buffTai = Math.min(buffTai + BUFF_INCREMENT, MAX_BUFF);
+                buffXiu = 0;
+            } else if (e.key === '2' && !submitButton.disabled) {
+                buffXiu = Math.min(buffXiu + BUFF_INCREMENT, MAX_BUFF);
+                buffTai = 0;
+            } else if (e.key === 'Enter' && !submitButton.disabled) {
+                form.dispatchEvent(new Event('submit'));
+            } else if (e.key === 'r' || e.key === 'R') {
+                resetButton.click();
+            } else if (e.key === 't' || e.key === 'T') {
+                themeToggle.click();
+            } else if (e.key === 'a' || e.key === 'A') {
+                autoPlayButton.click();
+            } else if (e.key === 'm' || e.key === 'M') {
+                multiplayerToggle.click();
+            } else if (e.key === 'c' || e.key === 'C') {
+                cancelButton.click();
+            }
+        });
+
+        toggleStats.addEventListener('click', () => {
+            statsTable.classList.toggle('visible');
+            const arrow = toggleStats.querySelector('span');
+            arrow.textContent = statsTable.classList.contains('visible') ? '▲' : '▼';
+        });
+
+        languageSelect.addEventListener('change', (e) => {
+            currentLang = e.target.value;
+            updateLanguage();
+        });
+
+        // Initialize
+        updateLanguage();
+        createParticles(10);
+    </script>
+</body>
+</html>
