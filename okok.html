@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bảng Tuần Hoàn Các Nguyên Tố - Phiên Bản Đẹp Đẽ & Đầy Đủ 118! 🧪✨</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 20px;
+            color: #333;
+            overflow-x: auto;
+        }
+        h1 {
+            text-align: center;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            margin-bottom: 20px;
+            font-size: 2.5em;
+            animation: fadeInDown 1s ease-out;
+        }
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .search-bar {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .search-bar input {
+            padding: 12px 20px 12px 45px;
+            width: 300px;
+            border: none;
+            border-radius: 25px;
+            font-size: 16px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            background: white url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="%23999" viewBox="0 0 16 16"><path d="m11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/></svg>') no-repeat 15px center;
+            background-size: 16px;
+            transition: box-shadow 0.3s ease;
+        }
+        .search-bar input:focus {
+            outline: none;
+            box-shadow: 0 4px 20px rgba(0,123,255,0.4);
+        }
+        .periodic-table {
+            display: grid;
+            grid-template-columns: repeat(18, 1fr);
+            grid-auto-rows: minmax(50px, auto);
+            gap: 3px;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            background: rgba(255,255,255,0.95);
+            border-radius: 20px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+            backdrop-filter: blur(10px);
+        }
+        .cell {
+            aspect-ratio: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid #ddd;
+            border-radius: 12px;
+            font-weight: bold;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            min-height: 50px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .cell::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.8), transparent);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .cell:hover {
+            transform: scale(1.1) rotate(1deg);
+            z-index: 10;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            animation: glow 1s infinite alternate;
+        }
+        .cell:hover::before {
+            opacity: 1;
+        }
+        @keyframes glow {
+            from { box-shadow: 0 0 10px rgba(255,255,255,0.5), 0 0 20px #0073e6; }
+            to { box-shadow: 0 0 20px rgba(255,255,255,0.8), 0 0 40px #0073e6; }
+        }
+        /* Màu sắc theo nhóm (gradient nâng cao với shine) */
+        .group-1 { background: linear-gradient(135deg, #FF6B6B, #FF8E8E); color: white; }
+        .group-2 { background: linear-gradient(135deg, #FFD93D, #FFE66D); color: #333; }
+        .group-3 { background: linear-gradient(135deg, #6BCF7F, #A8E6CF); color: white; }
+        .group-4 { background: linear-gradient(135deg, #4D96FF, #8AB6FF); color: white; }
+        .group-5 { background: linear-gradient(135deg, #9B59B6, #C39BD3); color: white; }
+        .group-6 { background: linear-gradient(135deg, #E74C3C, #F1948A); color: white; }
+        .group-7 { background: linear-gradient(135deg, #F39C12, #FAD7A0); color: #333; }
+        .group-8 { background: linear-gradient(135deg, #BDC3C7, #E5E8E8); color: #333; }
+        .group-9 { background: linear-gradient(135deg, #FF6B6B, #FF5252); color: white; }
+        .group-10 { background: linear-gradient(135deg, #FFD93D, #FFC107); color: #333; }
+        .group-11 { background: linear-gradient(135deg, #6BCF7F, #4CAF50); color: white; }
+        .group-12 { background: linear-gradient(135deg, #4D96FF, #2196F3); color: white; }
+        .group-13 { background: linear-gradient(135deg, #9B59B6, #673AB7); color: white; }
+        .group-14 { background: linear-gradient(135deg, #E74C3C, #D32F2F); color: white; }
+        .group-15 { background: linear-gradient(135deg, #F39C12, #FF9800); color: #333; }
+        .group-16 { background: linear-gradient(135deg, #BDC3C7, #9E9E9E); color: #333; }
+        .group-17 { background: linear-gradient(135deg, #FF6B6B, #F44336); color: white; }
+        .group-18 { background: linear-gradient(135deg, #4D96FF, #1976D2); color: white; }
+        .empty { background: #f0f0f0; border: 1px dashed #ccc; cursor: default; }
+        .header {
+            background: linear-gradient(#34495E, #2C3E50) !important;
+            color: white !important;
+            font-size: 10px;
+            writing-mode: vertical-rl;
+            text-orientation: mixed;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
+        }
+        .period-label {
+            grid-column: 1 / -1;
+            text-align: center;
+            font-size: 16px;
+            font-weight: bold;
+            background: linear-gradient(#ECF0F1, #BDC3C7);
+            padding: 10px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            animation: slideInUp 0.5s ease-out;
+        }
+        @keyframes slideInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .lanthanides, .actinides {
+            grid-column: 3 / 13;
+            display: grid;
+            grid-template-columns: repeat(10, 1fr);
+            gap: 2px;
+            background: linear-gradient(#f9f9f9, #e9e9e9);
+            padding: 8px;
+            border-radius: 10px;
+            margin-top: 5px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        .lanthanides .cell, .actinides .cell {
+            font-size: 10px;
+            min-height: 40px;
+            border-radius: 6px;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.6);
+            animation: fadeIn 0.4s ease;
+        }
+        .modal-content {
+            background: linear-gradient(135deg, white, #f8f9fa);
+            margin: 5% auto;
+            padding: 25px;
+            border-radius: 20px;
+            width: 80%;
+            max-width: 700px;
+            text-align: left;
+            animation: slideIn 0.4s ease;
+            max-height: 85vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.4);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        .modal h2 { 
+            text-align: center; 
+            color: #333; 
+            margin-bottom: 20px;
+            font-size: 1.8em;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        }
+        .info-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        .info-table th, .info-table td {
+            border: 1px solid #e0e0e0;
+            padding: 12px;
+            text-align: left;
+        }
+        .info-table th { 
+            background: linear-gradient(#f2f2f2, #e0e0e0); 
+            font-weight: bold; 
+            color: #555;
+        }
+        .info-table tr:nth-child(even) { background: #f9f9f9; }
+        .close { 
+            color: #aaa; 
+            float: right; 
+            font-size: 28px; 
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+        .close:hover { color: #333; }
+        .qr-section {
+            text-align: center;
+            margin-top: 30px;
+            padding: 20px;
+            background: linear-gradient(135deg, white, #f8f9fa);
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+        .qr-section img { 
+            max-width: 150px; 
+            border: 2px solid #ddd; 
+            border-radius: 10px;
+            transition: transform 0.3s ease;
+        }
+        .qr-section img:hover { transform: scale(1.05); }
+        .highlight { 
+            border-color: #FFD700 !important; 
+            box-shadow: 0 0 15px #FFD700 !important; 
+            animation: pulse 1s infinite;
+        }
+        @keyframes pulse {
+            0% { box-shadow: 0 0 15px #FFD700; }
+            50% { box-shadow: 0 0 25px #FFD700; }
+            100% { box-shadow: 0 0 15px #FFD700; }
+        }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideIn { from { transform: translateY(-50px); } to { transform: translateY(0); } }
+        @media (max-width: 768px) {
+            .periodic-table { grid-template-columns: repeat(9, 1fr); }
+            .search-bar input { width: 100%; }
+            .modal-content { width: 95%; margin: 10% auto; padding: 15px; }
+        }
+        footer {
+            text-align: center;
+            color: white;
+            margin-top: 20px;
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+    <h1><i class="fas fa-table"></i> Bảng Tuần Hoàn Đầy Đủ 118 Nguyên Tố - Click Để Xem Chi Tiết!</h1>
+    
+    <div class="search-bar">
+        <input type="text" id="searchInput" placeholder="Tìm nguyên tố (ví dụ: Vàng hoặc Au)...">
+    </div>
+    
+    <div class="periodic-table" id="periodicTable"></div>
+
+    <!-- Modal chi tiết đầy đủ -->
+    <div id="factModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2 id="modalTitle"></h2>
+            <table class="info-table">
+                <tr><th>Thuộc tính</th><th>Giá trị</th></tr>
+                <tr><td><i class="fas fa-atom"></i> Số nguyên tử</td><td id="modalAtomicNumber"></td></tr>
+                <tr><td><i class="fas fa-hashtag"></i> Biểu tượng</td><td id="modalSymbol"></td></tr>
+                <tr><td><i class="fas fa-tag"></i> Tên</td><td id="modalName"></td></tr>
+                <tr><td><i class="fas fa-weight-hanging"></i> Khối lượng nguyên tử</td><td id="modalAtomicMass"></td></tr>
+                <tr><td><i class="fas fa-layer-group"></i> Nhóm</td><td id="modalGroup"></td></tr>
+                <tr><td><i class="fas fa-layer-group"></i> Chu kỳ</td><td id="modalPeriod"></td></tr>
+                <tr><td><i class="fas fa-thermometer-half"></i> Điểm nóng chảy</td><td id="modalMeltingPoint"></td></tr>
+                <tr><td><i class="fas fa-thermometer-three-quarters"></i> Điểm sôi</td><td id="modalBoilingPoint"></td></tr>
+                <tr><td><i class="fas fa-balance-scale"></i> Mật độ</td><td id="modalDensity"></td></tr>
+                <tr><td><i class="fas fa-info-circle"></i> Mô tả & Ứng dụng</td><td id="modalDescription"></td></tr>
+            </table>
+        </div>
+    </div>
+
+    <div class="qr-section">
+        <h3><i class="fas fa-qrcode"></i> Quét QR Để Khám Phá 3D!</h3>
+        <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://ptable.com/?lang=vi" alt="QR Code" />
+        <p>Link: <a href="https://ptable.com/?lang=vi" target="_blank">ptable.com</a> – Mô hình 3D, video phản ứng!</p>
+    </div>
+
+    <footer>
+        <p>Dữ liệu từ Royal Society of Chemistry | Thiết kế bởi Grok</p>
+    </footer>
+
+    <script>
+        // Data đầy đủ 118 nguyên tố (full từ RSC, dịch VN)
+        const elements = [
+            {atomic_number:1, symbol:"H", name:"Hydro", group:1, period:1, atomic_mass:"1.008", melting_point:"14 K", boiling_point:"20 K", density:"0.00008988 g/cm³", description:"Khí nhẹ nhất, dùng trong bóng bay, nhiên liệu tên lửa. Fun fact: Cung cấp năng lượng cho sao qua tổng hợp. 🪐"},
+            {atomic_number:2, symbol:"He", name:"Heli", group:18, period:1, atomic_mass:"4.0026", melting_point:"0.95 K", boiling_point:"4.22 K", density:"0.0001785 g/cm³", description:"Khí trơ, dùng trong bóng bay, lặn biển. Fun fact: Khí nhẹ dùng cho bóng bay, nguyên tố phong phú thứ hai trong vũ trụ. 🎈"},
+            {atomic_number:3, symbol:"Li", name:"Liti", group:1, period:2, atomic_mass:"6.94", melting_point:"453 K", boiling_point:"1615 K", density:"0.534 g/cm³", description:"Kim loại kiềm nhẹ, dùng trong pin sạc. Fun fact: Pin điện thoại của bạn có nó! 🔋"},
+            {atomic_number:4, symbol:"Be", name:"Beri", group:2, period:2, atomic_mass:"9.0122", melting_point:"1560 K", boiling_point:"3243 K", density:"1.85 g/cm³", description:"Kim loại cứng, dùng trong hợp kim hàng không. Fun fact: Hợp kim siêu nhẹ cho máy bay! 💎"},
+            {atomic_number:5, symbol:"B", name:"Bo", group:13, period:2, atomic_mass:"10.81", melting_point:"2349 K", boiling_point:"4200 K", density:"2.34 g/cm³", description:"Dùng trong thủy tinh, chất bán dẫn. Fun fact: Trong kính chống đạn và bột giặt. 🔬"},
+            {atomic_number:6, symbol:"C", name:"Cacbon", group:14, period:2, atomic_mass:"12.011", melting_point:"3823 K", boiling_point:"4300 K", density:"3.51 g/cm³", description:"Cơ sở của sự sống, kim cương, than đá. Fun fact: Kim cương và than củi cùng một nguyên tố! ♦️"},
+            {atomic_number:7, symbol:"N", name:"Nitơ", group:15, period:2, atomic_mass:"14.007", melting_point:"63.15 K", boiling_point:"77.36 K", density:"0.00125 g/cm³", description:"Khí chiếm 78% khí quyển, dùng trong phân bón. Fun fact: Chiếm 78% không khí, dùng đông lạnh kem! 🌬️"},
+            {atomic_number:8, symbol:"O", name:"Oxy", group:16, period:2, atomic_mass:"15.999", melting_point:"54.36 K", boiling_point:"90.19 K", density:"0.001429 g/cm³", description:"Khí cần thiết cho hô hấp, cháy. Fun fact: Hỗ trợ cháy, nhưng quá nhiều gây ngộ độc. 🌊"},
+            {atomic_number:9, symbol:"F", name:"Flo", group:17, period:2, atomic_mass:"18.998", melting_point:"53.53 K", boiling_point:"85.03 K", density:"0.001696 g/cm³", description:"Khí ăn mòn mạnh, dùng trong nước uống. Fun fact: Ăn mòn kính, dùng kem đánh răng chống sâu! 🦷"},
+            {atomic_number:10, symbol:"Ne", name:"Neon", group:18, period:2, atomic_mass:"20.18", melting_point:"27.1 K", boiling_point:"27.1 K", density:"0.0009 g/cm³", description:"Khí trơ, dùng trong đèn neon. Fun fact: Làm đèn neon rực rỡ ở thành phố. 💡"},
+            {atomic_number:11, symbol:"Na", name:"Natri", group:1, period:3, atomic_mass:"22.99", melting_point:"370.95 K", boiling_point:"1156 K", density:"0.97 g/cm³", description:"Kim loại kiềm, dùng trong muối ăn. Fun fact: Pháo hoa bùng nổ nhờ nó! 🧂"},
+            {atomic_number:12, symbol:"Mg", name:"Magie", group:2, period:3, atomic_mass:"24.305", melting_point:"923 K", boiling_point:"1363 K", density:"1.74 g/cm³", description:"Kim loại nhẹ, dùng trong hợp kim. Fun fact: Cháy sáng trắng trong pháo hoa. ✨"},
+            {atomic_number:13, symbol:"Al", name:"Nhôm", group:13, period:3, atomic_mass:"26.982", melting_point:"933.47 K", boiling_point:"2792 K", density:"2.7 g/cm³", description:"Kim loại nhẹ, dùng trong bao bì, máy bay. Fun fact: Lon nước ngọt của bạn! 🥫"},
+            {atomic_number:14, symbol:"Si", name:"Silic", group:14, period:3, atomic_mass:"28.085", melting_point:"1687 K", boiling_point:"3538 K", density:"2.33 g/cm³", description:"Chất bán dẫn, dùng trong chip máy tính. Fun fact: Cát biển và chip cùng một thứ! 🏖️"},
+            {atomic_number:15, symbol:"P", name:"Phốtpho", group:15, period:3, atomic_mass:"30.974", melting_point:"317.3 K", boiling_point:"553.7 K", density:"1.82 g/cm³", description:"Dùng trong diêm, phân bón. Fun fact: Tự cháy trong không khí, dùng làm diêm – độc! 🔥"},
+            {atomic_number:16, symbol:"S", name:"Lưu huỳnh", group:16, period:3, atomic_mass:"32.06", melting_point:"388.36 K", boiling_point:"717.8 K", density:"2.07 g/cm³", description:"Vàng, dùng trong axit, thuốc súng. Fun fact: Mùi trứng thối, dùng khử trùng bể bơi. 👃"},
+            {atomic_number:17, symbol:"Cl", name:"Clo", group:17, period:3, atomic_mass:"35.45", melting_point:"171.6 K", boiling_point:"239.11 K", density:"0.003214 g/cm³", description:"Khí độc, dùng khử trùng nước. Fun fact: Khử trùng bể bơi, nhưng Hitler dùng làm vũ khí hóa học WWI. 🧼"},
+            {atomic_number:18, symbol:"Ar", name:"Argon", group:18, period:3, atomic_mass:"39.948", melting_point:"83.81 K", boiling_point:"87.85 K", density:"0.001784 g/cm³", description:"Khí trơ, dùng hàn, bảo vệ. Fun fact: Lấp đầy bóng đèn, bảo vệ hàn kim loại. 🛡️"},
+            {atomic_number:19, symbol:"K", name:"Kali", group:1, period:4, atomic_mass:"39.098", melting_point:"336.7 K", boiling_point:"1032 K", density:"0.89 g/cm³", description:"Kim loại kiềm, dùng trong phân bón. Fun fact: Bí mật của chuối – phản ứng với nước! 🍌"},
+            {atomic_number:20, symbol:"Ca", name:"Canxi", group:2, period:4, atomic_mass:"40.078", melting_point:"1115 K", boiling_point:"1757 K", density:"1.55 g/cm³", description:"Xương, răng, vôi, sữa. Fun fact: Xây dựng xương chắc khỏe, trong sữa và xi măng. 🦴"},
+            {atomic_number:21, symbol:"Sc", name:"Scandi", group:3, period:4, atomic_mass:"44.956", melting_point:"1814 K", boiling_point:"3103 K", density:"2.99 g/cm³", description:"Hợp kim nhẹ, đèn huỳnh quang. Fun fact: Hiếm, tăng cường cho khung xe đạp. 🚲"},
+            {atomic_number:22, symbol:"Ti", name:"Titan", group:4, period:4, atomic_mass:"47.867", melting_point:"1941 K", boiling_point:"3560 K", density:"4.51 g/cm³", description:"Mạnh, nhẹ, dùng trong máy bay. Fun fact: Siêu mạnh cho cấy ghép và máy bay. ✈️"},
+            {atomic_number:23, symbol:"V", name:"Vanađi", group:5, period:4, atomic_mass:"50.942", melting_point:"2183 K", boiling_point:"3680 K", density:"6.11 g/cm³", description:"Hợp kim thép, xúc tác hóa học. Fun fact: Làm cứng thép, hợp chất màu sắc. 🎨"},
+            {atomic_number:24, symbol:"Cr", name:"Crom", group:6, period:4, atomic_mass:"52.0", melting_point:"2180 K", boiling_point:"2944 K", density:"7.19 g/cm³", description:"Mạ chrome, chống gỉ sét. Fun fact: Chrome bóng trên xe hơi, liên quan tiểu đường. 🚗"},
+            {atomic_number:25, symbol:"Mn", name:"Mangan", group:7, period:4, atomic_mass:"54.938", melting_point:"1519 K", boiling_point:"2334 K", density:"7.21 g/cm³", description:"Hợp kim thép, pin khô. Fun fact: Năng lượng pin, đồng minh thép. 🔋"},
+            {atomic_number:26, symbol:"Fe", name:"Sắt", group:8, period:4, atomic_mass:"55.845", melting_point:"1811 K", boiling_point:"3134 K", density:"7.87 g/cm³", description:"Kim loại chính, thép, nam châm. Fun fact: Lõi Trái Đất, mang oxy trong máu. 🩸"},
+            {atomic_number:27, symbol:"Co", name:"Coban", group:9, period:4, atomic_mass:"58.933", melting_point:"1768 K", boiling_point:"3200 K", density:"8.9 g/cm³", description:"Hợp kim bền, pin lithium-ion. Fun fact: Sắc tố xanh, nam châm siêu mạnh. 🧲"},
+            {atomic_number:28, symbol:"Ni", name:"Niken", group:10, period:4, atomic_mass:"58.693", melting_point:"1728 K", boiling_point:"3003 K", density:"8.91 g/cm³", description:"Chống ăn mòn, pin, hợp kim. Fun fact: Đồng xu và dị ứng, ngôi sao thép không gỉ. 🪙"},
+            {atomic_number:29, symbol:"Cu", name:"Đồng", group:11, period:4, atomic_mass:"63.546", melting_point:"1357.77 K", boiling_point:"2835 K", density:"8.96 g/cm³", description:"Dẫn điện tốt, dây điện, tiền xu. Fun fact: Phù thủy dây điện, tiền cổ. ⚡"},
+            {atomic_number:30, symbol:"Zn", name:"Kẽm", group:12, period:4, atomic_mass:"65.38", melting_point:"692.68 K", boiling_point:"1180 K", density:"7.14 g/cm³", description:"Chống gỉ, mạ kẽm, vitamin. Fun fact: Bảo vệ chống gỉ, thuốc cảm cúm. ❄️"},
+            {atomic_number:31, symbol:"Ga", name:"Gali", group:13, period:4, atomic_mass:"69.723", melting_point:"302.91 K", boiling_point:"2673 K", density:"5.91 g/cm³", description:"Tan trong tay, LED, bán dẫn. Fun fact: Tan trong tay, đồng minh LED. 🤲"},
+            {atomic_number:32, symbol:"Ge", name:"Gecmani", group:14, period:4, atomic_mass:"72.630", melting_point:"1211.4 K", boiling_point:"3106 K", density:"5.323 g/cm³", description:"Bán dẫn hồng ngoại, chip. Fun fact: Mắt hồng ngoại, anh em chip. 👁️"},
+            {atomic_number:33, symbol:"As", name:"Asen", group:15, period:4, atomic_mass:"74.922", melting_point:"1090 K", boiling_point:"887 K", density:"5.727 g/cm³", description:"Độc hại, bán dẫn, thuốc cổ. Fun fact: Độc hay thuốc? Bán dẫn kép. ☠️"},
+            {atomic_number:34, symbol:"Se", name:"Selen", group:16, period:4, atomic_mass:"78.971", melting_point:"494 K", boiling_point:"958 K", density:"4.81 g/cm³", description:"Chống nắng kính, chất dinh dưỡng. Fun fact: Bảo vệ chống nắng trong kính, chất dinh dưỡng ninja. ☀️"},
+            {atomic_number:35, symbol:"Br", name:"Brom", group:17, period:4, atomic_mass:"79.904", melting_point:"265.8 K", boiling_point:"331.9 K", density:"3.1028 g/cm³", description:"Chất lỏng đỏ, chống cháy, thuốc ngủ. Fun fact: Chất lỏng đỏ nâu, chống cháy. 🔥"},
+            {atomic_number:36, symbol:"Kr", name:"Krypton", group:18, period:4, atomic_mass:"83.798", melting_point:"115.78 K", boiling_point:"119.8 K", density:"0.003733 g/cm³", description:"Khí hiếm, đèn flash, Siêu nhân. Fun fact: Quê hương Siêu nhân, lấp đầy bóng đèn flash. 💥"},
+            {atomic_number:37, symbol:"Rb", name:"Rubidi", group:1, period:5, atomic_mass:"85.468", melting_point:"312.46 K", boiling_point:"961 K", density:"1.532 g/cm³", description:"Đồng hồ nguyên tử, phản ứng mạnh. Fun fact: Đồng hồ tích tắc, nổ với nước. ⏰"},
+            {atomic_number:38, symbol:"Sr", name:"Stronti", group:2, period:5, atomic_mass:"87.62", melting_point:"1042 K", boiling_point:"1655 K", density:"2.64 g/cm³", description:"Pháo hoa đỏ, tăng cường xương. Fun fact: Ngôi sao pháo hoa đỏ, tăng cường xương. 🎆"},
+            {atomic_number:39, symbol:"Y", name:"Itri", group:3, period:5, atomic_mass:"88.906", melting_point:"1799 K", boiling_point:"3611 K", density:"4.472 g/cm³", description:"Laser, gốm sứ cứng. Fun fact: Ánh sáng laser, làm cứng gốm. 🔦"},
+            {atomic_number:40, symbol:"Zr", name:"Zirconi", group:4, period:5, atomic_mass:"91.224", melting_point:"2128 K", boiling_point:"4682 K", density:"6.52 g/cm³", description:"Khiên hạt nhân, kim cương giả. Fun fact: Khiên hạt nhân, kim cương giả. ⚛️"},
+            {atomic_number:41, symbol:"Nb", name:"Niobi", group:5, period:5, atomic_mass:"92.906", melting_point:"2750 K", boiling_point:"5017 K", density:"8.57 g/cm³", description:"Siêu dẫn, nhẫn trang sức. Fun fact: Siêu dẫn, lấp lánh nhẫn. 💍"},
+            {atomic_number:42, symbol:"Mo", name:"Môlibđen", group:6, period:5, atomic_mass:"95.95", melting_point:"2896 K", boiling_point:"4912 K", density:"10.28 g/cm³", description:"Làm mạnh thép, enzyme thiết yếu. Fun fact: Làm mạnh thép, enzyme thiết yếu. 🛠️"},
+            {atomic_number:43, symbol:"Tc", name:"Texneti", group:7, period:5, atomic_mass:"98", melting_point:"2430 K", boiling_point:"4538 K", density:"11.5 g/cm³", description:"Phóng xạ, quét y tế. Fun fact: Sinh ra trong phòng lab phóng xạ, máy quét y tế. 🏥"},
+            {atomic_number:44, symbol:"Ru", name:"Ruti", group:8, period:5, atomic_mass:"101.07", melting_point:"2334 K", boiling_point:"4147 K", density:"12.45 g/cm³", description:"Tiếp xúc cứng, nhuộm màu. Fun fact: Làm tiếp xúc cứng, nhuộm màu. 🖼️"},
+            {atomic_number:45, symbol:"Rh", name:"Rođi", group:9, period:5, atomic_mass:"102.91", melting_point:"2237 K", boiling_point:"4003 K", density:"12.41 g/cm³", description:"Chuyển đổi xúc tác, đắt đỏ. Fun fact: Vua bộ chuyển đổi xúc tác, đắt đỏ. 💰"},
+            {atomic_number:46, symbol:"Pd", name:"Pađi", group:10, period:5, atomic_mass:"106.42", melting_point:"1828 K", boiling_point:"3236 K", density:"12.02 g/cm³", description:"Bọt biển hydro, chuyển đổi. Fun fact: Bọt biển hydro, bạn đồng hành chuyển đổi. 🧽"},
+            {atomic_number:47, symbol:"Ag", name:"Bạc", group:11, period:5, atomic_mass:"107.87", melting_point:"1234.93 K", boiling_point:"2435 K", density:"10.49 g/cm³", description:"Dẫn điện tốt, trang sức, mặt trăng. Fun fact: Dẫn điện tốt nhất, tên gọi mặt trăng. 🌙"},
+            {atomic_number:48, symbol:"Cd", name:"Cađimi", group:12, period:5, atomic_mass:"112.41", melting_point:"594.22 K", boiling_point:"1040 K", density:"8.65 g/cm³", description:"Pin, độc tố sắc tố. Fun fact: Kẻ xấu pin, độc tố sắc tố. 🎨"},
+            {atomic_number:49, symbol:"In", name:"Inđi", group:13, period:5, atomic_mass:"114.82", melting_point:"429.75 K", boiling_point:"2345 K", density:"7.31 g/cm³", description:"Màn hình cảm ứng, tan chảy thấp. Fun fact: Thiếc màn hình cảm ứng, tan chảy thấp. 📱"},
+            {atomic_number:50, symbol:"Sn", name:"Thiếc", group:14, period:5, atomic_mass:"118.71", melting_point:"505.08 K", boiling_point:"2875 K", density:"7.365 g/cm³", description:"Lớp phủ lon, hàn lính. Fun fact: Lớp phủ lon, lính hàn. 🥫"},
+            {atomic_number:51, symbol:"Sb", name:"Antimon", group:15, period:5, atomic_mass:"121.76", melting_point:"903.78 K", boiling_point:"1908 K", density:"6.697 g/cm³", description:"Chống cháy, chữa bệnh cổ. Fun fact: Chống cháy, chữa bệnh cổ. 🛡️"},
+            {atomic_number:52, symbol:"Te", name:"Telu", group:16, period:5, atomic_mass:"127.6", melting_point:"722.66 K", boiling_point:"1261 K", density:"6.24 g/cm³", description:"Pin mặt trời, tên Trái Đất. Fun fact: Ngôi sao pin mặt trời, tên Trái Đất. ☀️"},
+            {atomic_number:53, symbol:"I", name:"Iốt", group:17, period:5, atomic_mass:"126.9", melting_point:"386.85 K", boiling_point:"457.4 K", density:"4.933 g/cm³", description:"Tuyến giáp, khử trùng. Fun fact: Anh hùng tuyến giáp, biểu tượng khử trùng. 🩹"},
+            {atomic_number:54, symbol:"Xe", name:"Xênôn", group:18, period:5, atomic_mass:"131.29", melting_point:"161.4 K", boiling_point:"165.1 K", density:"0.005887 g/cm³", description:"Gây tê, đèn pha. Fun fact: Gây tê người ngoài hành tinh, anh hùng đèn pha. 👽"},
+            {atomic_number:55, symbol:"Cs", name:"Xêzi", group:1, period:6, atomic_mass:"132.91", melting_point:"301.7 K", boiling_point:"944 K", density:"1.93 g/cm³", description:"Đồng hồ nguyên tử, phản ứng nhất. Fun fact: Bậc thầy đồng hồ, phản ứng nhất. ⏰"},
+            {atomic_number:56, symbol:"Ba", name:"Bari", group:2, period:6, atomic_mass:"137.33", melting_point:"1000 K", boiling_point:"1918 K", density:"3.51 g/cm³", description:"X-quang tương phản, pháo hoa xanh. Fun fact: Tương phản X-quang, pháo hoa xanh. 📸"},
+            {atomic_number:57, symbol:"La", name:"Lantan", group:3, period:6, atomic_mass:"138.91", melting_point:"1193 K", boiling_point:"3737 K", density:"6.162 g/cm³", description:"Kính máy ảnh đất hiếm. Fun fact: Kính máy ảnh đất hiếm. 📷"},
+            {atomic_number:58, symbol:"Ce", name:"Xeri", group:3, period:6, atomic_mass:"140.12", melting_point:"1068 K", boiling_point:"3443 K", density:"6.77 g/cm³", description:"Xúc tác sạch, đánh bóng. Fun fact: Chất xúc tác sạch, sức mạnh đánh bóng. 🧽"},
+            {atomic_number:59, symbol:"Pr", name:"Praseođimi", group:3, period:6, atomic_mass:"140.91", melting_point:"1208 K", boiling_point:"3520 K", density:"6.77 g/cm³", description:"Nam châm, kính xanh. Fun fact: Làm nam châm, kính xanh. 🧲"},
+            {atomic_number:60, symbol:"Nd", name:"Neôđimi", group:3, period:6, atomic_mass:"144.24", melting_point:"1297 K", boiling_point:"3347 K", density:"7.01 g/cm³", description:"Nam châm siêu trong loa. Fun fact: Nam châm siêu trong loa. 🔊"},
+            {atomic_number:61, symbol:"Pm", name:"Promeți", group:3, period:6, atomic_mass:"145", melting_point:"1315 K", boiling_point:"3527 K", density:"7.26 g/cm³", description:"Phóng xạ hiếm, pin không gian. Fun fact: Hiếm phóng xạ, pin không gian. 🚀"},
+            {atomic_number:62, symbol:"Sm", name:"Sama", group:3, period:6, atomic_mass:"150.36", melting_point:"1345 K", boiling_point:"2064 K", density:"7.52 g/cm³", description:"Nam châm và thanh lò phản ứng. Fun fact: Nam châm và thanh lò phản ứng. 🧲"},
+            {atomic_number:63, symbol:"Eu", name:"Europi", group:3, period:6, atomic_mass:"151.96", melting_point:"1099 K", boiling_point:"1802 K", density:"5.24 g/cm³", description:"Ánh sáng đỏ TV, vinh danh châu Âu. Fun fact: Ánh sáng đỏ TV, vinh danh châu Âu. 📺"},
+            {atomic_number:64, symbol:"Gd", name:"Gâđolini", group:3, period:6, atomic_mass:"157.25", melting_point:"1585 K", boiling_point:"3273 K", density:"7.90 g/cm³", description:"MRI phép màu, ăn neutron. Fun fact: Phép màu MRI, neutron eater. 🩻"},
+            {atomic_number:65, symbol:"Tb", name:"Terbi", group:3, period:6, atomic_mass:"158.93", melting_point:"1629 K", boiling_point:"3396 K", density:"8.23 g/cm³", description:"Guru ánh sáng xanh. Fun fact: Guru ánh sáng xanh. 💚"},
+            {atomic_number:66, symbol:"Dy", name:"Đisprosi", group:3, period:6, atomic_mass:"162.5", melting_point:"1680 K", boiling_point:"2840 K", density:"8.55 g/cm³", description:"Anh hùng nam châm nóng. Fun fact: Anh hùng nam châm nóng. 🧲"},
+            {atomic_number:67, symbol:"Ho", name:"Hôlmi", group:3, period:6, atomic_mass:"164.93", melting_point:"1737 K", boiling_point:"3003 K", density:"8.79 g/cm³", description:"Quái vật từ tính. Fun fact: Quái vật từ tính. 🧲"},
+            {atomic_number:68, symbol:"Er", name:"Erbi", group:3, period:6, atomic_mass:"167.26", melting_point:"1802 K", boiling_point:"3022 K", density:"9.066 g/cm³", description:"Bạn sợi quang học. Fun fact: Bạn sợi quang học. 🌐"},
+            {atomic_number:69, symbol:"Tm", name:"Tuli", group:3, period:6, atomic_mass:"168.93", melting_point:"1827 K", boiling_point:"2223 K", density:"9.32 g/cm³", description:"Laser và X-quang hiếm. Fun fact: Laser và X-quang hiếm. 🔦"},
+            {atomic_number:70, symbol:"Yb", name:"Ittebi", group:3, period:6, atomic_mass:"173.05", melting_point:"1097 K", boiling_point:"1469 K", density:"6.90 g/cm³", description:"Đồng hồ và đồng hồ nguyên tử. Fun fact: Đồng hồ và đồng hồ nguyên tử. ⏰"},
+            {atomic_number:71, symbol:"Lu", name:"Lutezi", group:3, period:6, atomic_mass:"174.97", melting_point:"1925 K", boiling_point:"3675 K", density:"9.84 g/cm³", description:"Chiến binh ung thư, đất hiếm đặc. Fun fact: Chiến binh ung thư, đất hiếm đặc. ⚕️"},
+            {atomic_number:72, symbol:"Hf", name:"Hafni", group:4, period:6, atomic_mass:"178.49", melting_point:"2506 K", boiling_point:"4876 K", density:"13.31 g/cm³", description:"Thanh lò phản ứng, tan chảy cao. Fun fact: Thanh lò phản ứng, tan chảy cao. ⚛️"},
+            {atomic_number:73, symbol:"Ta", name:"Tantali", group:5, period:6, atomic_mass:"180.95", melting_point:"3290 K", boiling_point:"5731 K", density:"16.65 g/cm³", description:"Vua tụ điện, cứng cáp. Fun fact: Vua tụ điện, cứng cáp. 🔋"},
+            {atomic_number:74, symbol:"W", name:"Tungsten", group:6, period:6, atomic_mass:"183.84", melting_point:"3695 K", boiling_point:"6203 K", density:"19.25 g/cm³", description:"Sợi bóng đèn, tan chảy nóng nhất. Fun fact: Sợi bóng đèn, tan chảy nóng nhất. 💡"},
+            {atomic_number:75, symbol:"Re", name:"Reni", group:7, period:6, atomic_mass:"186.21", melting_point:"3459 K", boiling_point:"5869 K", density:"21.02 g/cm³", description:"Hợp kim siêu động cơ phản lực. Fun fact: Hợp kim siêu động cơ phản lực. ✈️"},
+            {atomic_number:76, symbol:"Os", name:"Osimi", group:8, period:6, atomic_mass:"190.23", melting_point:"3306 K", boiling_point:"3978 K", density:"22.59 g/cm³", description:"Kim loại tự nhiên đặc nhất. Fun fact: Kim loại tự nhiên đặc nhất. 🏋️"},
+            {atomic_number:77, symbol:"Ir", name:"Iriđi", group:9, period:6, atomic_mass:"192.22", melting_point:"2719 K", boiling_point:"4700 K", density:"22.56 g/cm³", description:"Dấu hiệu kẻ giết khủng long. Fun fact: Dấu hiệu kẻ giết khủng long. ☄️"},
+            {atomic_number:78, symbol:"Pt", name:"Bạch kim", group:10, period:6, atomic_mass:"195.08", melting_point:"2041.4 K", boiling_point:"4098 K", density:"21.45 g/cm³", description:"Trang sức xúc tác, chống ăn mòn. Fun fact: Trang sức xúc tác. 💍"},
+            {atomic_number:79, symbol:"Au", name:"Vàng", group:11, period:6, atomic_mass:"196.97", melting_point:"1337.33 K", boiling_point:"3243 K", density:"19.3 g/cm³", description:"Bling không phản ứng, vĩnh cửu, tiền tệ. Fun fact: Bling không phản ứng, vĩnh cửu. 🏆"},
+            {atomic_number:80, symbol:"Hg", name:"Thủy ngân", group:12, period:6, atomic_mass:"200.59", melting_point:"234.32 K", boiling_point:"629.88 K", density:"13.534 g/cm³", description:"Kim loại lỏng, nhiệt kế, độc hại. Fun fact: Kim loại lỏng, nỗi kinh hoàng nhiệt kế. 🌡️"},
+            {atomic_number:81, symbol:"Tl", name:"Thalli", group:13, period:6, atomic_mass:"204.38", melting_point:"577 K", boiling_point:"1746 K", density:"11.85 g/cm³", description:"Kẻ mềm độc hại, dùng trong kính. Fun fact: Kẻ mềm độc hại. ☠️"},
+            {atomic_number:82, symbol:"Pb", name:"Chì", group:14, period:6, atomic_mass:"207.2", melting_point:"600.61 K", boiling_point:"2022 K", density:"11.34 g/cm³", description:"Khiên nặng, huyền thoại bút chì, độc. Fun fact: Khiên nặng, huyền thoại bút chì. 📝"},
+            {atomic_number:83, symbol:"Bi", name:"Bizmut", group:15, period:6, atomic_mass:"208.98", melting_point:"544.7 K", boiling_point:"1837 K", density:"9.78 g/cm³", description:"Tinh thể cầu vồng, Pepto-Bismol hồng. Fun fact: Tinh thể cầu vồng, Pepto hồng. 🌈"},
+            {atomic_number:84, symbol:"Po", name:"Pôlôni", group:16, period:6, atomic_mass:"209", melting_point:"527 K", boiling_point:"1235 K", density:"9.32 g/cm³", description:"Khám phá Curie, siêu phóng xạ. Fun fact: Khám phá Curie, siêu phóng xạ. ☢️"},
+            {atomic_number:85, symbol:"At", name:"Axtati", group:17, period:6, atomic_mass:"210", melting_point:"575 K", boiling_point:"610 K", density:"N/A", description:"Tự nhiên hiếm nhất, diệt ung thư. Fun fact: Tự nhiên hiếm nhất, diệt ung thư. ⚡"},
+            {atomic_number:86, symbol:"Rn", name:"Rađon", group:18, period:6, atomic_mass:"222", melting_point:"202 K", boiling_point:"211.5 K", density:"0.00973 g/cm³", description:"Khí phóng xạ nguy hiểm trong nhà. Fun fact: Nguy hiểm khí trong nhà. 🏠"},
+            {atomic_number:87, symbol:"Fr", name:"Franxi", group:1, period:7, atomic_mass:"223", melting_point:"300 K", boiling_point:"950 K", density:"1.87 g/cm³", description:"Hiếm phản ứng ngắn hạn, phóng xạ. Fun fact: Hiếm phản ứng ngắn hạn. ⏳"},
+            {atomic_number:88, symbol:"Ra", name:"Rađi", group:2, period:7, atomic_mass:"226", melting_point:"1233 K", boiling_point:"2110 K", density:"5.5 g/cm³", description:"Phát sáng độc, sơn đồng hồ cũ. Fun fact: Phát sáng độc, sơn đồng hồ cũ. ⌚"},
+            {atomic_number:89, symbol:"Ac", name:"Actini", group:3, period:7, atomic_mass:"227", melting_point:"1051 K", boiling_point:"3198 K", density:"10.07 g/cm³", description:"Khởi đầu actinide phóng xạ. Fun fact: Khởi đầu actinide phóng xạ. ☢️"},
+            {atomic_number:90, symbol:"Th", name:"Thori", group:3, period:7, atomic_mass:"232.04", melting_point:"2023 K", boiling_point:"4788 K", density:"11.72 g/cm³", description:"Nhiên liệu hạt nhân tiềm năng. Fun fact: Nhiên liệu hạt nhân tiềm năng. ⚛️"},
+            {atomic_number:91, symbol:"Pa", name:"Protactini", group:3, period:7, atomic_mass:"231.04", melting_point:"1841 K", boiling_point:"4300 K", density:"15.37 g/cm³", description:"Hiếm, khó tách, phóng xạ. Fun fact: Hiếm và khó tách. 🔬"},
+            {atomic_number:92, symbol:"U", name:"Uran", group:3, period:7, atomic_mass:"238.03", melting_point:"1408 K", boiling_point:"4404 K", density:"19.1 g/cm³", description:"Bom nguyên tử, nguồn năng lượng. Fun fact: Cơ sở bom nguyên tử, nguồn năng lượng. 💣"},
+            {atomic_number:93, symbol:"Np", name:"Neptuni", group:3, period:7, atomic_mass:"237", melting_point:"917 K", boiling_point:"4174 K", density:"20.45 g/cm³", description:"Cha plutoni, tổng hợp, phóng xạ. Fun fact: Cha plutoni, tổng hợp. 🪐"},
+            {atomic_number:94, symbol:"Pu", name:"Plutoni", group:3, period:7, atomic_mass:"244", melting_point:"913 K", boiling_point:"3505 K", density:"19.84 g/cm³", description:"Dự án Manhattan, năng lượng không gian. Fun fact: Ngôi sao Dự án Manhattan, năng lượng không gian. 🚀"},
+            {atomic_number:95, symbol:"Am", name:"Americi", group:3, period:7, atomic_mass:"243", melting_point:"1449 K", boiling_point:"2880 K", density:"13.67 g/cm³", description:"Máy dò khói, phóng xạ. Fun fact: Anh hùng máy dò khói. 🚨"},
+            {atomic_number:96, symbol:"Cm", name:"Curi", group:3, period:7, atomic_mass:"247", melting_point:"1343 K", boiling_point:"N/A", density:"13.51 g/cm³", description:"Tên Curie, làm trong lab, phóng xạ. Fun fact: Tên Curie, làm trong lab. 👩‍🔬"},
+            {atomic_number:97, symbol:"Bk", name:"Béceli", group:3, period:7, atomic_mass:"247", melting_point:"N/A", boiling_point:"N/A", density:"14.78 g/cm³", description:"Sinh Berkeley, lượng nhỏ, phóng xạ. Fun fact: Sinh Berkeley, lượng nhỏ. 🏫"},
+            {atomic_number:98, symbol:"Cf", name:"Calipor", group:3, period:7, atomic_mass:"251", melting_point:"N/A", boiling_point:"N/A", density:"15.1 g/cm³", description:"Nguồn neutron, siêu đắt, tổng hợp. Fun fact: Nguồn neutron, siêu đắt. 💎"},
+            {atomic_number:99, symbol:"Es", name:"Ainsstein", group:3, period:7, atomic_mass:"252", melting_point:"N/A", boiling_point:"N/A", density:"N/A", description:"Vinh danh Einstein từ thử bom, phóng xạ. Fun fact: Vinh danh Einstein từ thử bom. 🧠"},
+            {atomic_number:100, symbol:"Fm", name:"Permi", group:3, period:7, atomic_mass:"257", melting_point:"N/A", boiling_point:"N/A", density:"N/A", description:"Tên Fermi từ bom H, tổng hợp. Fun fact: Tên Fermi từ bom H. ☄️"},
+            {atomic_number:101, symbol:"Md", name:"Menđelevi", group:3, period:7, atomic_mass:"258", melting_point:"N/A", boiling_point:"N/A", density:"N/A", description:"Vinh danh nhà phát minh bảng, tổng hợp. Fun fact: Vinh danh nhà phát minh bảng. 📊"},
+            {atomic_number:102, symbol:"No", name:"Nôben", group:3, period:7, atomic_mass:"259", melting_point:"N/A", boiling_point:"N/A", density:"N/A", description:"Tên giải thưởng, tổng hợp, phóng xạ. Fun fact: Tên giải thưởng, tổng hợp. 🏆"},
+            {atomic_number:103, symbol:"Lr", name:"Lôrensi", group:3, period:7, atomic_mass:"266", melting_point:"N/A", boiling_point:"N/A", density:"N/A", description:"Vinh danh người tạo máy gia tốc, tổng hợp. Fun fact: Vinh danh người tạo máy gia tốc. 🔄"},
+            {atomic_number:104, symbol:"Rf", name:"Rutherforđi", group:4, period:7, atomic_mass:"267", melting_point:"N/A", boiling_point:"N/A", density:"N/A", description:"Tên nhà tiên phong hạt nhân, tổng hợp. Fun fact: Tên nhà tiên phong hạt nhân. ⚛️"},
+            {atomic_number:105, symbol:"Db", name:"Đubni", group:5, period:7, atomic_mass:"268", melting_point:"N/A", boiling_point:"N/A", density:"N/A", description:"Di sản lab Dubna, tổng hợp. Fun fact: Di sản lab Dubna. 🧪"},
+            {atomic_number:106, symbol:"Sg", name:"Sibôgi", group:6, period:7, atomic_mass:"269", melting_point:"N/A", boiling_point:"N/A", density:"N/A", description:"Nhà hóa học định hình bảng, tổng hợp. Fun fact: Nhà hóa học định hình bảng. 👨‍🔬"},
+            {atomic_number:107, symbol:"Bh", name:"Bôri", group:7, period:7, atomic_mass:"270", melting_point:"N/A", boiling_point:"N/A", density:"N/A", description:"Người tạo mô hình lượng tử, tổng hợp. Fun fact: Người tạo mô hình lượng tử. ⚛️"},
+            {atomic_number:108, symbol:"Hs", name:"Hasi", group:8, period:7, atomic_mass:"277", melting_point:"N/A", boiling_point:"N/A", density:"N/A", description:"Tổng hợp nặng, vinh danh Hesse. Fun fact: Tổng hợp nặng, vinh danh Hesse. 🏔️"},
+            {atomic_number:109, symbol:"Mt", name:"Maitneri", group:9, period:7, atomic_mass:"278", melting_point:"N/A", boiling_point:"N/A", density:"N/A", description:"Đồng phát hiện phân hạch, tổng hợp. Fun fact: Đồng phát hiện phân hạch. 👩‍🔬"},
+            {atomic_number:110, symbol:"Ds", name:"Đarmacxtati", group:10, period:7, atomic_mass:"281", melting_point:"N/A", boiling_point:"N/A", density:"N/A", description:"Tên lab Đức, tổng hợp. Fun fact: Tên lab Đức. 🇩🇪"},
+            {atomic_number:111, symbol:"Rg", name:"Rôngten", group:11, period:7, atomic_mass:"282", melting_point:"N/A", boiling_point:"N/A", density:"N/A", description:"Vinh danh nhà phát minh X-quang, tổng hợp. Fun fact: Vinh danh nhà phát minh X-quang. 📸"},
+            {atomic_number:112, symbol:"Cn", name:"Côpernic", group:12, period:7, atomic_mass:"285", melting_point:"N/A", boiling_point:"N/A", density:"N/A", description:"Người mô hình nhật tâm, tổng hợp. Fun fact: Người mô hình nhật tâm. 🌌"},
+            {atomic_number:113, symbol:"Nh", name:"Nihôni", group:13, period:7, atomic_mass:"286", melting_point:"N/A", boiling_point:"N/A", density:"N/A", description:"Yếu tố lab Nhật, tổng hợp. Fun fact: Yếu tố lab Nhật. 🇯🇵"},
+            {atomic_number:114, symbol:"Fl", name:"Plevôvi", group:14, period:7, atomic_mass:"289", melting_point:"N/A", boiling_point:"N/A", density:"N/A", description:"Sinh ra máy gia tốc Nga, tổng hợp. Fun fact: Sinh ra máy gia tốc Nga. 🇷🇺"},
+            {atomic_number:115, symbol:"Mc", name:"Môscôvi", group:15, period:7, atomic_mass:"290", melting_point:"N/A", boiling_point:"N/A", density:"N/A", description:"Quà bảng chu kỳ Môscô, tổng hợp. Fun fact: Quà bảng chu kỳ Môscô. 🏙️"},
+            {atomic_number:116, symbol:"Lv", name:"Liver", group:16, period:7, atomic_mass:"293", melting_point:"N/A", boiling_point:"N/A", density:"N/A", description:"Di sản lab Mỹ, tổng hợp. Fun fact: Di sản lab Mỹ. 🇺🇸"},
+            {atomic_number:117, symbol:"Ts", name:"Tennesi", group:17, period:7, atomic_mass:"294", melting_point:"N/A", boiling_point:"N/A", density:"N/A", description:"Vinh danh bang miền Nam, tổng hợp. Fun fact: Vinh danh bang miền Nam. 🇺🇸"},
+            {atomic_number:118, symbol:"Og", name:"Oganesôn", group:18, period:7, atomic_mass:"294", melting_point:"N/A", boiling_point:"N/A", density:"N/A", description:"Hoàn thành bảng, khí hiếm tổng hợp. Fun fact: Hoàn thành bảng, khí hiếm? 🏆"}
+        ];
+
+        // Generate table (full periods, lanthanides, actinides)
+        function generateTable() {
+            const table = document.getElementById('periodicTable');
+            let html = '';
+            let row = 1;
+
+            // Headers
+            html += '<div class="period-label" style="grid-row: ' + row + ';">Nhóm</div>';
+            row += 1;
+            for (let g = 1; g <= 18; g++) {
+                html += `<div class="header" style="grid-row: ${row}; grid-column: ${g};">${g}</div>`;
+            }
+            row += 1;
+
+            // Periods 1-5
+            for (let p = 1; p <= 5; p++) {
+                html += `<div class="period-label" style="grid-row: ${row};">Chu Kỳ ${p}</div>`;
+                row += 1;
+                for (let g = 1; g <= 18; g++) {
+                    const el = elements.find(e => e.period === p && e.group === g);
+                    if (el) {
+                        html += `<div class="cell group-${g}" style="grid-row: ${row}; grid-column: ${g};" data-atomic_number="${el.atomic_number}" data-symbol="${el.symbol}" data-name="${el.name}" data-atomic_mass="${el.atomic_mass}" data-group="${el.group}" data-period="${el.period}" data-melting_point="${el.melting_point}" data-boiling_point="${el.boiling_point}" data-density="${el.density}" data-description="${el.description}">${el.symbol}<br>${el.atomic_number}</div>`;
+                    } else {
+                        html += `<div class="empty" style="grid-row: ${row}; grid-column: ${g};"></div>`;
+                    }
+                }
+                row += 1;
+            }
+
+            // Period 6
+            html += `<div class="period-label" style="grid-row: ${row};">Chu Kỳ 6</div>`;
+            row += 1;
+            for (let g = 1; g <= 18; g++) {
+                let el = elements.find(e => e.period === 6 && e.group === g);
+                if (g === 3) el = elements.find(e => e.atomic_number === 57);
+                if (g > 3 && g < 13) el = null;
+                if (el) {
+                    html += `<div class="cell group-${g}" style="grid-row: ${row}; grid-column: ${g};" data-atomic_number="${el.atomic_number}" data-symbol="${el.symbol}" data-name="${el.name}" data-atomic_mass="${el.atomic_mass}" data-group="${el.group}" data-period="${el.period}" data-melting_point="${el.melting_point}" data-boiling_point="${el.boiling_point}" data-density="${el.density}" data-description="${el.description}">${el.symbol}<br>${el.atomic_number}</div>`;
+                } else {
+                    html += `<div class="empty" style="grid-row: ${row}; grid-column: ${g};"></div>`;
+                }
+            }
+            row += 1;
+
+            // Lanthanides
+            html += `<div class="lanthanides" style="grid-row: ${row};">`;
+            for (let i = 58; i <= 71; i++) {
+                const el = elements.find(e => e.atomic_number === i);
+                html += `<div class="cell group-3" data-atomic_number="${el.atomic_number}" data-symbol="${el.symbol}" data-name="${el.name}" data-atomic_mass="${el.atomic_mass}" data-group="${el.group}" data-period="${el.period}" data-melting_point="${el.melting_point}" data-boiling_point="${el.boiling_point}" data-density="${el.density}" data-description="${el.description}">${el.symbol}<br>${el.atomic_number}</div>`;
+            }
+            html += '</div>';
+            row += 2;
+
+            // Period 7
+            html += `<div class="period-label" style="grid-row: ${row};">Chu Kỳ 7</div>`;
+            row += 1;
+            for (let g = 1; g <= 18; g++) {
+                let el = elements.find(e => e.period === 7 && e.group === g);
+                if (g === 3) el = elements.find(e => e.atomic_number === 89);
+                if (g > 3 && g < 13) el = null;
+                if (el) {
+                    html += `<div class="cell group-${g}" style="grid-row: ${row}; grid-column: ${g};" data-atomic_number="${el.atomic_number}" data-symbol="${el.symbol}" data-name="${el.name}" data-atomic_mass="${el.atomic_mass}" data-group="${el.group}" data-period="${el.period}" data-melting_point="${el.melting_point}" data-boiling_point="${el.boiling_point}" data-density="${el.density}" data-description="${el.description}">${el.symbol}<br>${el.atomic_number}</div>`;
+                } else {
+                    html += `<div class="empty" style="grid-row: ${row}; grid-column: ${g};"></div>`;
+                }
+            }
+            row += 1;
+
+            // Actinides
+            html += `<div class="actinides" style="grid-row: ${row};">`;
+            for (let i = 90; i <= 103; i++) {
+                const el = elements.find(e => e.atomic_number === i);
+                html += `<div class="cell group-3" data-atomic_number="${el.atomic_number}" data-symbol="${el.symbol}" data-name="${el.name}" data-atomic_mass="${el.atomic_mass}" data-group="${el.group}" data-period="${el.period}" data-melting_point="${el.melting_point}" data-boiling_point="${el.boiling_point}" data-density="${el.density}" data-description="${el.description}">${el.symbol}<br>${el.atomic_number}</div>`;
+            }
+            html += '</div>';
+
+            table.innerHTML = html;
+        }
+
+        // Search
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            const query = e.target.value.toLowerCase();
+            document.querySelectorAll('.cell').forEach(cell => {
+                const name = cell.getAttribute('data-name')?.toLowerCase() || '';
+                const symbol = cell.getAttribute('data-symbol')?.toLowerCase() || '';
+                if (name.includes(query) || symbol.includes(query)) {
+                    cell.classList.add('highlight');
+                } else {
+                    cell.classList.remove('highlight');
+                }
+            });
+        });
+
+        // Modal chi tiết
+        const modal = document.getElementById('factModal');
+        const closeBtn = document.querySelector('.close');
+        document.addEventListener('click', (e) => {
+            if (e.target.classList.contains('cell')) {
+                const atomicNumber = e.target.getAttribute('data-atomic_number');
+                const el = elements.find(elem => elem.atomic_number == atomicNumber);
+                if (el) {
+                    document.getElementById('modalTitle').textContent = el.name;
+                    document.getElementById('modalAtomicNumber').textContent = el.atomic_number;
+                    document.getElementById('modalSymbol').textContent = el.symbol;
+                    document.getElementById('modalName').textContent = el.name;
+                    document.getElementById('modalAtomicMass').textContent = el.atomic_mass;
+                    document.getElementById('modalGroup').textContent = el.group;
+                    document.getElementById('modalPeriod').textContent = el.period;
+                    document.getElementById('modalMeltingPoint').textContent = el.melting_point;
+                    document.getElementById('modalBoilingPoint').textContent = el.boiling_point;
+                    document.getElementById('modalDensity').textContent = el.density;
+                    document.getElementById('modalDescription').textContent = el.description;
+                    modal.style.display = 'block';
+                }
+            } else if (e.target === modal || e.target === closeBtn) {
+                modal.style.display = 'none';
+            }
+        });
+
+        // Init
+        generateTable();
+    </script>
+</body>
+</html>
