@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bảng Tuần Hoàn 118 Nguyên Tố - THPT Lộc Bình</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        :root { --bg: linear-gradient(135deg, #0c1a2b, #1e3a5f, #2c5364); }
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: var(--bg);
+            background-attachment: fixed;
+            margin: 0; padding: 15px 10px;
+            color: #fff; min-height: 100vh;
+        }
+        h1 { text-align: center; margin: 10px 0 5px; font-size: 2.5em; text-shadow: 0 4px 12px rgba(0,0,0,0.6); }
+        .subtitle { text-align: center; margin-bottom: 20px; opacity: 0.95; font-size: 1.15em; }
+        .search-container { text-align: center; margin: 25px 0; }
+        #searchInput {
+            padding: 14px 24px; width: 420px; max-width: 92%;
+            border: none; border-radius: 50px; font-size: 17px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.5); outline: none;
+        }
+        #searchInput:focus { width: 480px; }
+        .periodic-table {
+            display: grid; grid-template-columns: repeat(18, minmax(48px, 1fr));
+            gap: 5px; max-width: 1380px; margin: 0 auto; padding: 18px;
+            background: rgba(255,255,255,0.09); border-radius: 18px;
+            backdrop-filter: blur(12px);
+        }
+        .cell {
+            aspect-ratio: 1/1; background: rgba(255,255,255,0.93); color: #1a1a1a;
+            border-radius: 9px; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; position: relative;
+            cursor: pointer; transition: all 0.28s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 3px 10px rgba(0,0,0,0.25); overflow: hidden;
+        }
+        .cell:hover { transform: scale(1.28) translateY(-4px); z-index: 20; box-shadow: 0 15px 30px rgba(255,255,255,0.75); }
+        .cell .num { position: absolute; top: 5px; left: 7px; font-size: 0.78em; font-weight: 700; color: #444; }
+        .cell .sym { font-size: 1.65em; font-weight: bold; margin: 8px 0 2px; }
+        .cell .mass { position: absolute; bottom: 5px; font-size: 0.72em; opacity: 0.9; font-weight: 500; color: #333; }
+        .g1  { border-bottom: 6px solid #ef5350; }
+        .g2  { border-bottom: 6px solid #ffd54f; }
+        .g3to12 { border-bottom: 6px solid #64b5f6; }
+        .g13 { border-bottom: 6px solid #ba68c8; }
+        .g14 { border-bottom: 6px solid #4dd0e1; }
+        .g15 { border-bottom: 6px solid #81c784; }
+        .g16 { border-bottom: 6px solid #ffb74d; }
+        .g17 { border-bottom: 6px solid #e57373; }
+        .g18 { border-bottom: 6px solid #7986cb; }
+        .f-block { background: #e8f5e9 !important; border-bottom: 6px solid #66bb6a; }
+
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%;
+                  background: rgba(0,0,0,0.78); backdrop-filter: blur(8px); }
+        .modal-content {
+            background: #fff; color: #222; margin: 4% auto; padding: 28px 32px;
+            width: 92%; max-width: 660px; border-radius: 20px;
+            box-shadow: 0 15px 50px rgba(0,0,0,0.4); animation: modalPop 0.4s ease;
+        }
+        @keyframes modalPop { from { transform: scale(0.85); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        .close { float: right; font-size: 36px; line-height: 1; cursor: pointer; color: #777; }
+        .info-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 14px; margin-top: 22px;
+        }
+        .info-item {
+            background: #f8f9fa; padding: 14px; border-radius: 12px;
+            border-left: 6px solid #1976d2;
+        }
+        .info-item label {
+            font-size: 0.8em; color: #555; font-weight: bold;
+            text-transform: uppercase; letter-spacing: 0.5px;
+        }
+        .info-item span { display: block; margin-top: 6px; font-size: 1.1em; font-weight: 500; }
+        .full { grid-column: 1 / -1; }
+    </style>
+</head>
+<body>
+    <h1><i class="fas fa-atom"></i> Bảng Tuần Hoàn Các Nguyên Tố</h1>
+    <p class="subtitle">THPT Lộc Bình</p>
+    <div class="search-container">
+        <input type="text" id="searchInput" placeholder="🔍 Tìm theo tên, ký hiệu hoặc số nguyên tử...">
+    </div>
+    <div class="periodic-table" id="ptable"></div>
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">×</span>
+            <h2 id="modalTitle" style="text-align:center; color:#1976d2; margin-bottom:20px;"></h2>
+            <div class="info-grid">
+                <div class="info-item"><label>Số hiệu nguyên tử</label><span id="mNum"></span></div>
+                <div class="info-item"><label>Ký hiệu</label><span id="mSym" style="font-size:1.7em;"></span></div>
+                <div class="info-item"><label>Tên nguyên tố</label><span id="mName"></span></div>
+                <div class="info-item"><label>Nguyên tử khối</label><span id="mMass"></span></div>
+                <div class="info-item"><label>Nhóm</label><span id="mGroup"></span></div>
+                <div class="info-item"><label>Chu kỳ</label><span id="mPeriod"></span></div>
+                <div class="info-item"><label>Điểm nóng chảy</label><span id="mMelt"></span></div>
+                <div class="info-item"><label>Điểm sôi</label><span id="mBoil"></span></div>
+                <div class="info-item full"><label>Cấu hình electron</label><span id="mConfig" style="font-family:monospace;"></span></div>
+                <div class="info-item full"><label>Tính chất vật lý</label><span id="mPhysical"></span></div>
+                <div class="info-item full"><label>Tính chất hóa học</label><span id="mChemical"></span></div>
+                <div class="info-item full"><label>Mô tả & Ứng dụng</label><span id="mDesc"></span></div>
+            </div>
+        </div>
+    </div>
+    <script>
+        const elements = [
+                    {n:1, s:"H", name:"Hydrogen", g:1, p:1, m:"1.008", c:"1s¹", mp:"-259.16 °C", bp:"-252.88 °C", physical:"Khí không màu, không mùi, nhẹ nhất trong các khí.", chemical:"Có tính khử mạnh.", d:"Phi kim nhẹ nhất, thành phần chính của Mặt Trời và các vì sao."},
+                    {n:2, s:"He", name:"Heli", g:18, p:1, m:"4.003", c:"1s²", mp:"-272 °C", bp:"-269 °C", physical:"Khí không màu, không mùi.", chemical:"Hoàn toàn trơ (khí hiếm).", d:"Khí hiếm, dùng trong bóng bay và làm mát nam châm siêu dẫn."},
+                    {n:3, s:"Li", name:"Liti", g:1, p:2, m:"6.94", c:"[He] 2s¹", mp:"180.5 °C", bp:"1342 °C", physical:"Kim loại mềm, màu trắng bạc.", chemical:"Có tính khử mạnh.", d:"Kim loại nhẹ nhất, cực kỳ quan trọng trong sản xuất pin sạc."},
+                    {n:4, s:"Be", name:"Beri", g:2, p:2, m:"9.012", c:"[He] 2s²", mp:"1287 °C", bp:"2471 °C", physical:"Kim loại cứng, màu xám.", chemical:"Có tính khử.", d:"Kim loại cứng, dùng trong hợp kim hàng không vũ trụ."},
+                    {n:5, s:"B", name:"Bo", g:13, p:2, m:"10.81", c:"[He] 2s² 2p¹", mp:"2075 °C", bp:"4000 °C", physical:"Á kim, màu đen xám.", chemical:"Thể hiện cả tính kim loại và phi kim.", d:"Á kim dùng trong sợi thủy tinh và thuốc diệt côn trùng."},
+                    {n:6, s:"C", name:"Cacbon", g:14, p:2, m:"12.011", c:"[He] 2s² 2p²", mp:"3550 °C", bp:"4827 °C", physical:"Chất rắn, tồn tại dạng kim cương và than chì.", chemical:"Thể hiện cả tính khử và oxi hóa.", d:"Cơ sở của mọi sự sống, tồn tại dạng kim cương và than chì."},
+                    {n:7, s:"N", name:"Nitơ", g:15, p:2, m:"14.007", c:"[He] 2s² 2p³", mp:"-210 °C", bp:"-196 °C", physical:"Khí không màu, không mùi.", chemical:"Tính oxi hóa và khử.", d:"Khí không màu, chiếm phần lớn bầu khí quyển Trái Đất."},
+                    {n:8, s:"O", name:"Ôxy", g:16, p:2, m:"15.999", c:"[He] 2s² 2p⁴", mp:"-219 °C", bp:"-183 °C", physical:"Khí không màu, không mùi.", chemical:"Tính oxi hóa mạnh.", d:"Cần thiết cho sự hô hấp và quá trình đốt cháy."},
+                    {n:9, s:"F", name:"Flo", g:17, p:2, m:"18.998", c:"[He] 2s² 2p⁵", mp:"-220 °C", bp:"-188 °C", physical:"Khí màu vàng nhạt, mùi hắc.", chemical:"Tính oxi hóa mạnh nhất.", d:"Phi kim phản ứng mạnh nhất, dùng trong kem đánh răng."},
+                    {n:10, s:"Ne", name:"Neon", g:18, p:2, m:"20.180", c:"[He] 2s² 2p⁶", mp:"-248.6 °C", bp:"-246.1 °C", physical:"Khí không màu, không mùi.", chemical:"Hoàn toàn trơ (khí hiếm).", d:"Khí hiếm phát ra ánh sáng đỏ cam trong đèn quảng cáo."},
+                    {n:11, s:"Na", name:"Sodium", g:1, p:3, m:"22.990", c:"1s² 2s² 2p⁶ 3s¹", mp:"97.8 °C", bp:"883 °C", physical:"Kim loại mềm, màu trắng bạc, cắt được bằng dao.", chemical:"Có tính khử rất mạnh, phản ứng mãnh liệt với nước.", d:"Kim loại kiềm mềm, phản ứng cực mạnh với nước."},
+                    {n:12, s:"Mg", name:"Magnesium", g:2, p:3, m:"24.305", c:"1s² 2s² 2p⁶ 3s²", mp:"650 °C", bp:"1090 °C", physical:"Kim loại màu trắng bạc, nhẹ, cháy với ánh sáng trắng chói.", chemical:"Có tính khử.", d:"Kim loại nhẹ, cháy với ánh sáng trắng chói lòa."},
+                    {n:13, s:"Al", name:" Aluminium", g:13, p:3, m:"26.982", c:"1s² 2s² 2p⁶ 3s² 3p¹", mp:"660.3 °C", bp:"2519 °C", physical:"Kim loại màu trắng bạc, dẫn điện và nhiệt tốt.", chemical:"Có tính khử.", d:"Kim loại phổ biến nhất vỏ Trái Đất, dẫn nhiệt và điện tốt."},
+                    {n:14, s:"Si", name:"Silicon", g:14, p:3, m:"28.085", c:"1s² 2s² 2p⁶ 3s² 3p²", mp:"1414 °C", bp:"3265 °C", physical:"Chất rắn có ánh kim màu xám xanh.", chemical:"Á kim, thể hiện cả tính kim loại và phi kim.", d:"Á kim quan trọng nhất trong công nghệ chế tạo chip máy tính."},
+                    {n:15, s:"P", name:"Phosphorus", g:15, p:3, m:"30.974", c:"1s² 2s² 2p⁶ 3s² 3p⁵", mp:"44.15 °C (trắng)", bp:"280.5 °C", physical:"Chất rắn, có nhiều dạng thù hình: trắng, đỏ, đen.", chemical:"Có tính khử mạnh (đặc biệt photpho trắng).", d:"Dùng trong diêm, phân bón và có trong xương người."},
+                    {n:16, s:"S", name:"Sulfur", g:16, p:3, m:"32.06", c:"1s² 2s² 2p⁶ 3s² 3p⁴", mp:"115.21 °C", bp:"444.6 °C", physical:"Chất rắn màu vàng, có nhiều dạng thù hình.", chemical:"Vừa thể hiện tính khử, vừa thể hiện tính oxi hóa.", d:"Phi kim màu vàng, dùng sản xuất axit sunfuric."},
+                    {n:17, s:"Cl", name:"Chlorine", g:17, p:3, m:"35.45", c:"1s² 2s² 2p⁶ 3s² 3p⁵", mp:"-101.5 °C", bp:"-34.04 °C", physical:"Khí màu vàng lục, mùi hắc, tan tốt trong nước.", chemical:"Tính oxi hóa mạnh.", d:"Khí màu vàng lục, dùng khử trùng nước và làm chất tẩy rửa."},
+                    {n:18, s:"Ar", name:"Argon", g:18, p:3, m:"39.948", c:"[Ne] 3s² 3p⁶", mp:"-189.3 °C", bp:"-185.8 °C", physical:"Khí không màu, không mùi.", chemical:"Hoàn toàn trơ (khí hiếm).", d:"Khí hiếm phổ biến, dùng trong hàn kim loại và bóng đèn."},
+                    {n:19, s:"K", name:"Kali", g:1, p:4, m:"39.098", c:"[Ar] 4s¹", mp:"63.5 °C", bp:"759 °C", physical:"Kim loại mềm, màu trắng bạc.", chemical:"Tính khử rất mạnh.", d:"Kim loại kiềm thiết yếu cho tế bào thực vật và động vật."},
+                    {n:20, s:"Ca", name:"Canxi", g:2, p:4, m:"40.078", c:"[Ar] 4s²", mp:"842 °C", bp:"1484 °C", physical:"Kim loại màu trắng bạc.", chemical:"Có tính khử.", d:"Kim loại kiềm thổ, thành phần chính của xương và răng."},
+                    {n:21, s:"Sc", name:"Scandi", g:3, p:4, m:"44.956", c:"[Ar] 3d¹ 4s²", mp:"1541 °C", bp:"2836 °C", physical:"Kim loại màu bạc.", chemical:"Có tính khử.", d:"Dùng trong hợp kim nhôm-scandi cho thiết bị thể thao."},
+                    {n:22, s:"Ti", name:"Titan", g:4, p:4, m:"47.867", c:"[Ar] 3d² 4s²", mp:"1668 °C", bp:"3287 °C", physical:"Kim loại màu trắng bạc, rất bền.", chemical:"Có tính khử.", d:"Kim loại siêu bền, nhẹ, làm máy bay và khớp nhân tạo."},
+                    {n:23, s:"V", name:"Vanadi", g:5, p:4, m:"50.942", c:"[Ar] 3d³ 4s²", mp:"1910 °C", bp:"3407 °C", physical:"Kim loại màu xám bạc.", chemical:"Có tính khử.", d:"Dùng để tăng cường độ bền cho thép xây dựng."},
+                    {n:24, s:"Cr", name:"Crom", g:6, p:4, m:"51.996", c:"[Ar] 3d⁵ 4s¹", mp:"1907 °C", bp:"2671 °C", physical:"Kim loại cứng, màu xám sáng.", chemical:"Có tính khử.", d:"Kim loại rất cứng, làm thép không gỉ và mạ sáng bóng."},
+                    {n:25, s:"Mn", name:"Mangan", g:7, p:4, m:"54.938", c:"[Ar] 3d⁵ 4s²", mp:"1246 °C", bp:"2061 °C", physical:"Kim loại màu xám.", chemical:"Có tính khử.", d:"Thành phần không thể thiếu trong sản xuất gang thép."},
+                    {n:26, s:"Fe", name:"Iron", g:8, p:4, m:"55.845", c:"[Ar] 3d⁶ 4s²", mp:"1538 °C", bp:"2862 °C", physical:"Kim loại màu xám, từ tính.", chemical:"Có tính khử.", d:"Kim loại phổ biến và quan trọng nhất trong lịch sử nhân loại."},
+                    {n:27, s:"Co", name:"Cobalt", g:9, p:4, m:"58.933", c:"[Ar] 3d⁷ 4s²", mp:"1495 °C", bp:"2927 °C", physical:"Kim loại màu xám sáng.", chemical:"Có tính khử.", d:"Dùng trong nam châm và hợp kim siêu bền chịu nhiệt."},
+                    {n:28, s:"Ni", name:"Niken", g:10, p:4, m:"58.693", c:"[Ar] 3d⁸ 4s²", mp:"1455 °C", bp:"2913 °C", physical:"Kim loại màu trắng bạc.", chemical:"Có tính khử.", d:"Chống ăn mòn tốt, dùng trong pin sạc và tiền xu."},
+                    {n:29, s:"Cu", name:"Đồng", g:11, p:4, m:"63.546", c:"[Ar] 3d¹⁰ 4s¹", mp:"1085 °C", bp:"2562 °C", physical:"Kim loại màu đỏ, dẫn điện tốt.", chemical:"Có tính khử.", d:"Dẫn điện cực tốt, vật liệu chính làm dây điện."},
+                    {n:30, s:"Zn", name:"Kẽm", g:12, p:4, m:"65.38", c:"[Ar] 3d¹⁰ 4s²", mp:"419 °C", bp:"907 °C", physical:"Kim loại màu trắng xanh.", chemical:"Có tính khử.", d:"Dùng mạ thép chống gỉ và sản xuất hợp kim đồng thau."},
+                    {n:31, s:"Ga", name:"Gali", g:13, p:4, m:"69.723", c:"[Ar] 3d¹⁰ 4s² 4p¹", mp:"30 °C", bp:"2204 °C", physical:"Kim loại mềm, nóng chảy ở nhiệt độ thấp.", chemical:"Có tính khử.", d:"Nóng chảy ngay trên lòng bàn tay, dùng trong LED."},
+                    {n:32, s:"Ge", name:"Germani", g:14, p:4, m:"72.630", c:"[Ar] 3d¹⁰ 4s² 4p²", mp:"938 °C", bp:"2833 °C", physical:"Á kim, ánh kim màu xám.", chemical:"Á kim.", d:"Chất bán dẫn quan trọng trong sợi quang học."},
+                    {n:33, s:"As", name:"Asen", g:15, p:4, m:"74.922", c:"[Ar] 3d¹⁰ 4s² 4p³", mp:"817 °C (sublimes)", bp:"614 °C", physical:"Á kim, màu xám.", chemical:"Thể hiện cả tính khử và oxi hóa.", d:"Á kim có độc tính cao, dùng trong thuốc trừ sâu cũ."},
+                    {n:34, s:"Se", name:"Selen", g:16, p:4, m:"78.971", c:"[Ar] 3d¹⁰ 4s² 4p⁴", mp:"221 °C", bp:"685 °C", physical:"Chất rắn màu xám đỏ.", chemical:"Vừa khử vừa oxi hóa.", d:"Dùng trong tế bào quang điện và công nghiệp thủy tinh."},
+                    {n:35, s:"Br", name:"Brom", g:17, p:4, m:"79.904", c:"[Ar] 3d¹⁰ 4s² 4p⁵", mp:"-7.2 °C", bp:"59 °C", physical:"Chất lỏng màu đỏ nâu, mùi hắc.", chemical:"Tính oxi hóa.", d:"Chất lỏng màu đỏ nâu, dùng trong thuốc nhuộm."},
+                    {n:36, s:"Kr", name:"Krypton", g:18, p:4, m:"83.798", c:"[Ar] 3d¹⁰ 4s² 4p⁶", mp:"-157.4 °C", bp:"-153.4 °C", physical:"Khí không màu, không mùi.", chemical:"Hoàn toàn trơ.", d:"Khí hiếm dùng trong đèn flash tốc độ cao."},
+                    {n:37, s:"Rb", name:"Rubidi", g:1, p:5, m:"85.468", c:"[Kr] 5s¹", mp:"39.3 °C", bp:"688 °C", physical:"Kim loại mềm, màu trắng bạc.", chemical:"Tính khử rất mạnh.", d:"Kim loại kiềm rất mềm, dùng trong đồng hồ nguyên tử."},
+                    {n:38, s:"Sr", name:"Stronti", g:2, p:5, m:"87.62", c:"[Kr] 5s²", mp:"777 °C", bp:"1382 °C", physical:"Kim loại màu trắng bạc.", chemical:"Có tính khử.", d:"Tạo ra màu đỏ rực rỡ trong pháo hoa."},
+                    {n:39, s:"Y", name:"Ytri", g:3, p:5, m:"88.906", c:"[Kr] 4d¹ 5s²", mp:"1526 °C", bp:"3336 °C", physical:"Kim loại màu xám bạc.", chemical:"Có tính khử.", d:"Dùng trong đèn LED trắng và siêu dẫn nhiệt độ cao."},
+                    {n:40, s:"Zr", name:"Zirconi", g:4, p:5, m:"91.224", c:"[Kr] 4d² 5s²", mp:"1855 °C", bp:"4409 °C", physical:"Kim loại màu xám trắng.", chemical:"Có tính khử.", d:"Chống ăn mòn, dùng trong lò phản ứng hạt nhân."},
+                    {n:41, s:"Nb", name:"Niobi", g:5, p:5, m:"92.906", c:"[Kr] 4d⁴ 5s¹", mp:"2477 °C", bp:"4744 °C", physical:"Kim loại màu xám.", chemical:"Có tính khử.", d:"Dùng trong nam châm siêu dẫn và trang sức."},
+                    {n:42, s:"Mo", name:"Molibden", g:6, p:5, m:"95.95", c:"[Kr] 4d⁵ 5s¹", mp:"2623 °C", bp:"4639 °C", physical:"Kim loại màu xám.", chemical:"Có tính khử.", d:"Kim loại có điểm nóng chảy rất cao, làm thép chịu nhiệt."},
+                    {n:43, s:"Tc", name:"Tecneti", g:7, p:5, m:"98", c:"[Kr] 4d⁵ 5s²", mp:"2157 °C", bp:"4265 °C", physical:"Kim loại màu bạc.", chemical:"Có tính khử.", d:"Nguyên tố nhân tạo đầu tiên, dùng trong y học hạt nhân."},
+                    {n:44, s:"Ru", name:"Rutheni", g:8, p:5, m:"101.07", c:"[Kr] 4d⁷ 5s¹", mp:"2334 °C", bp:"4150 °C", physical:"Kim loại màu trắng bạc.", chemical:"Có tính khử.", d:"Dùng trong các tiếp điểm điện siêu bền."},
+                    {n:45, s:"Rh", name:"Rhodi", g:9, p:5, m:"102.91", c:"[Kr] 4d⁸ 5s¹", mp:"1964 °C", bp:"3695 °C", physical:"Kim loại màu trắng bạc.", chemical:"Có tính khử.", d:"Kim loại quý hiếm, dùng tráng gương và xúc tác ô tô."},
+                    {n:46, s:"Pd", name:"Paladi", g:10, p:5, m:"106.42", c:"[Kr] 4d¹⁰", mp:"1555 °C", bp:"2963 °C", physical:"Kim loại màu trắng bạc.", chemical:"Có tính khử.", d:"Hấp thụ hydro cực tốt, dùng trong bộ lọc khí thải."},
+                    {n:47, s:"Ag", name:"Bạc", g:11, p:5, m:"107.87", c:"[Kr] 4d¹⁰ 5s¹", mp:"962 °C", bp:"2162 °C", physical:"Kim loại màu trắng sáng.", chemical:"Có tính khử.", d:"Kim loại dẫn điện và dẫn nhiệt tốt nhất thế giới."},
+                    {n:48, s:"Cd", name:"Cadimi", g:12, p:5, m:"112.41", c:"[Kr] 4d¹⁰ 5s²", mp:"321 °C", bp:"767 °C", physical:"Kim loại mềm, màu trắng xanh.", chemical:"Có tính khử.", d:"Kim loại độc, dùng trong pin Ni-Cd cũ."},
+                    {n:49, s:"In", name:"Indi", g:13, p:5, m:"114.81", c:"[Kr] 4d¹⁰ 5s² 5p¹", mp:"157 °C", bp:"2072 °C", physical:"Kim loại mềm, màu trắng bạc.", chemical:"Có tính khử.", d:"Làm lớp phủ màn hình cảm ứng điện thoại."},
+                    {n:50, s:"Sn", name:"Thiếc", g:14, p:5, m:"118.71", c:"[Kr] 4d¹⁰ 5s² 5p²", mp:"232 °C", bp:"2602 °C", physical:"Kim loại mềm, màu trắng bạc.", chemical:"Có tính khử.", d:"Kim loại mềm, dùng tráng lon thực phẩm để chống gỉ."},
+                    {n:51, s:"Sb", name:"Antimon", g:15, p:5, m:"121.76", c:"[Kr] 4d¹⁰ 5s² 5p³", mp:"631 °C", bp:"1587 °C", physical:"Á kim, màu xám bạc.", chemical:"Thể hiện cả tính khử và oxi hóa.", d:"Dùng trong chất chống cháy và đạn chì."},
+                    {n:52, s:"Te", name:"Telu", g:16, p:5, m:"127.60", c:"[Kr] 4d¹⁰ 5s² 5p⁴", mp:"450 °C", bp:"988 °C", physical:"Á kim, màu bạc xám.", chemical:"Vừa khử vừa oxi hóa.", d:"Á kim dùng trong các tấm pin năng lượng mặt trời."},
+                    {n:53, s:"I", name:"Iốt", g:17, p:5, m:"126.90", c:"[Kr] 4d¹⁰ 5s² 5p⁵", mp:"114 °C", bp:"184 °C", physical:"Chất rắn màu tím đen, bay hơi thành khí tím.", chemical:"Tính oxi hóa.", d:"Phi kim cần thiết cho tuyến giáp và sát trùng vết thương."},
+                    {n:54, s:"Xe", name:"Xenon", g:18, p:5, m:"131.29", c:"[Kr] 4d¹⁰ 5s² 5p⁶", mp:"-112 °C", bp:"-108 °C", physical:"Khí không màu, không mùi.", chemical:"Hoàn toàn trơ.", d:"Khí hiếm dùng trong đèn pha ô tô cực sáng."},
+                    {n:55, s:"Cs", name:"Xesi", g:1, p:6, m:"132.91", c:"[Xe] 6s¹", mp:"28.4 °C", bp:"671 °C", physical:"Kim loại mềm, màu vàng nhạt.", chemical:"Tính khử cực mạnh.", d:"Dùng trong đồng hồ nguyên tử có độ chính xác tuyệt đối."},
+                    {n:56, s:"Ba", name:"Bari", g:2, p:6, m:"137.33", c:"[Xe] 6s²", mp:"727 °C", bp:"1897 °C", physical:"Kim loại màu trắng bạc.", chemical:"Có tính khử.", d:"Dùng trong thăm dò dầu khí và pháo hoa xanh lá."},
+                    {n:57, s:"La", name:"Lanthan", g:3, p:6, m:"138.91", c:"[Xe] 5d¹ 6s²", mp:"920 °C", bp:"3464 °C", physical:"Kim loại màu trắng bạc.", chemical:"Có tính khử.", d:"Mở đầu dãy Lanthan, dùng trong kính viễn vọng."},
+                    {n:58, s:"Ce", name:"Ceri", g:3, p:6, m:"140.12", c:"[Xe] 4f¹ 5d¹ 6s²", mp:"795 °C", bp:"3443 °C", physical:"Kim loại màu xám.", chemical:"Có tính khử.", d:"Kim loại hiếm dùng làm đá lửa trong bật lửa."},
+                    {n:59, s:"Pr", name:"Praseodym", g:3, p:6, m:"140.91", c:"[Xe] 4f³ 6s²", mp:"935 °C", bp:"3520 °C", physical:"Kim loại màu bạc.", chemical:"Có tính khử.", d:"Tạo màu vàng cho thủy tinh và nam châm mạnh."},
+                    {n:60, s:"Nd", name:"Neodym", g:3, p:6, m:"144.24", c:"[Xe] 4f⁴ 6s²", mp:"1021 °C", bp:"3074 °C", physical:"Kim loại màu trắng bạc.", chemical:"Có tính khử.", d:"Thành phần chính của nam châm vĩnh cửu mạnh nhất thế giới."},
+                    {n:61, s:"Pm", name:"Promethi", g:3, p:6, m:"145", c:"[Xe] 4f⁵ 6s²", mp:"1042 °C", bp:"3000 °C", physical:"Kim loại màu bạc.", chemical:"Có tính khử.", d:"Nguyên tố phóng xạ dùng trong pin hạt nhân nhỏ."},
+                    {n:62, s:"Sm", name:"Samari", g:3, p:6, m:"150.36", c:"[Xe] 4f⁶ 6s²", mp:"1072 °C", bp:"1794 °C", physical:"Kim loại màu bạc.", chemical:"Có tính khử.", d:"Dùng trong nam châm chịu nhiệt độ cao."},
+                    {n:63, s:"Eu", name:"Europi", g:3, p:6, m:"151.96", c:"[Xe] 4f⁷ 6s²", mp:"822 °C", bp:"1529 °C", physical:"Kim loại màu bạc.", chemical:"Có tính khử.", d:"Tạo màu đỏ cho màn hình TV và bảo mật tiền giấy."},
+                    {n:64, s:"Gd", name:"Gadolini", g:3, p:6, m:"157.25", c:"[Xe] 4f⁷ 5d¹ 6s²", mp:"1313 °C", bp:"3273 °C", physical:"Kim loại màu trắng bạc.", chemical:"Có tính khử.", d:"Dùng làm chất tương phản trong chụp cộng hưởng từ MRI."},
+                    {n:65, s:"Tb", name:"Terbi", g:3, p:6, m:"158.93", c:"[Xe] 4f⁹ 6s²", mp:"1356 °C", bp:"3230 °C", physical:"Kim loại màu bạc.", chemical:"Có tính khử.", d:"Dùng trong đèn huỳnh quang và thiết bị sonar."},
+                    {n:66, s:"Dy", name:"Dysprosi", g:3, p:6, m:"162.50", c:"[Xe] 4f¹⁰ 6s²", mp:"1412 °C", bp:"2567 °C", physical:"Kim loại màu bạc.", chemical:"Có tính khử.", d:"Dùng trong nam châm và ổ đĩa cứng máy tính."},
+                    {n:67, s:"Ho", name:"Holmi", g:3, p:6, m:"164.93", c:"[Xe] 4f¹¹ 6s²", mp:"1474 °C", bp:"2700 °C", physical:"Kim loại màu bạc.", chemical:"Có tính khử.", d:"Có mômen từ cao nhất, dùng trong laser y tế."},
+                    {n:68, s:"Er", name:"Erbi", g:3, p:6, m:"167.26", c:"[Xe] 4f¹² 6s²", mp:"1529 °C", bp:"2868 °C", physical:"Kim loại màu bạc.", chemical:"Có tính khử.", d:"Làm bộ khuếch đại tín hiệu trong cáp quang."},
+                    {n:69, s:"Tm", name:"Thuli", g:3, p:6, m:"168.93", c:"[Xe] 4f¹³ 6s²", mp:"1545 °C", bp:"1950 °C", physical:"Kim loại màu bạc.", chemical:"Có tính khử.", d:"Hiếm nhất trong các nguyên tố hiếm, dùng trong tia X di động."},
+                    {n:70, s:"Yb", name:"Yterbi", g:3, p:6, m:"173.05", c:"[Xe] 4f¹⁴ 6s²", mp:"819 °C", bp:"1196 °C", physical:"Kim loại màu bạc.", chemical:"Có tính khử.", d:"Dùng trong đồng hồ nguyên tử và thép không gỉ."},
+                    {n:71, s:"Lu", name:"Luteti", g:3, p:6, m:"174.97", c:"[Xe] 4f¹⁴ 5d¹ 6s²", mp:"1663 °C", bp:"3402 °C", physical:"Kim loại màu bạc.", chemical:"Có tính khử.", d:"Dùng trong lọc dầu và xạ trị ung thư."},
+                    {n:72, s:"Hf", name:"Hafni", g:4, p:6, m:"178.49", c:"[Xe] 4f¹⁴ 5d² 6s²", mp:"2233 °C", bp:"4603 °C", physical:"Kim loại màu xám thép.", chemical:"Có tính khử.", d:"Dùng trong thanh điều khiển lò phản ứng hạt nhân."},
+                    {n:73, s:"Ta", name:"Tantal", g:5, p:6, m:"180.95", c:"[Xe] 4f¹⁴ 5d³ 6s²", mp:"3017 °C", bp:"5458 °C", physical:"Kim loại màu xám.", chemical:"Có tính khử.", d:"Chịu ăn mòn cực tốt, làm tụ điện trong điện thoại."},
+                    {n:74, s:"W", name:"Vonfram", g:6, p:6, m:"183.84", c:"[Xe] 4f¹⁴ 5d⁴ 6s²", mp:"3422 °C", bp:"5555 °C", physical:"Kim loại màu xám, rất cứng.", chemical:"Có tính khử.", d:"Nóng chảy ở nhiệt độ cao nhất, làm dây tóc bóng đèn."},
+                    {n:75, s:"Re", name:"Rheni", g:7, p:6, m:"186.21", c:"[Xe] 4f¹⁴ 5d⁵ 6s²", mp:"3186 °C", bp:"5596 °C", physical:"Kim loại màu trắng bạc.", chemical:"Có tính khử.", d:"Dùng trong động cơ phản lực và xăng cao cấp."},
+                    {n:76, s:"Os", name:"Osmi", g:8, p:6, m:"190.23", c:"[Xe] 4f¹⁴ 5d⁶ 6s²", mp:"3033 °C", bp:"5012 °C", physical:"Kim loại màu xanh bạc.", chemical:"Có tính khử.", d:"Nguyên tố có mật độ khối lượng lớn nhất (nặng nhất)."},
+                    {n:77, s:"Ir", name:"Iridi", g:9, p:6, m:"192.22", c:"[Xe] 4f¹⁴ 5d⁷ 6s²", mp:"2446 °C", bp:"4428 °C", physical:"Kim loại màu trắng bạc.", chemical:"Có tính khử.", d:"Kim loại chống ăn mòn nhất, dùng trong bugi ô tô."},
+                    {n:78, s:"Pt", name:"Bạch kim", g:10, p:6, m:"195.08", c:"[Xe] 4f¹⁴ 5d⁹ 6s¹", mp:"1768 °C", bp:"3825 °C", physical:"Kim loại màu trắng xám.", chemical:"Có tính khử.", d:"Kim loại quý, làm đồ trang sức và chất xúc tác."},
+                    {n:79, s:"Au", name:"Vàng", g:11, p:6, m:"196.97", c:"[Xe] 4f¹⁴ 5d¹⁰ 6s¹", mp:"1064 °C", bp:"2856 °C", physical:"Kim loại màu vàng sáng.", chemical:"Có tính khử.", d:"Kim loại quý, dẫn điện tốt và không bị xỉn màu."},
+                    {n:80, s:"Hg", name:"Thủy ngân", g:12, p:6, m:"200.59", c:"[Xe] 4f¹⁴ 5d¹⁰ 6s²", mp:"-39 °C", bp:"357 °C", physical:"Kim loại lỏng màu bạc.", chemical:"Có tính khử.", d:"Kim loại lỏng duy nhất, dùng trong nhiệt kế."},
+                    {n:81, s:"Tl", name:"Thali", g:13, p:6, m:"204.38", c:"[Xe] 4f¹⁴ 5d¹⁰ 6s² 6p¹", mp:"304 °C", bp:"1473 °C", physical:"Kim loại mềm, màu trắng xanh.", chemical:"Có tính khử.", d:"Rất độc, từng được dùng làm thuốc diệt chuột."},
+                    {n:82, s:"Pb", name:"Chì", g:14, p:6, m:"207.2", c:"[Xe] 4f¹⁴ 5d¹⁰ 6s² 6p²", mp:"327 °C", bp:"1749 °C", physical:"Kim loại mềm, màu xám.", chemical:"Có tính khử.", d:"Dùng trong ắc quy và tấm chắn ngăn tia X."},
+                    {n:83, s:"Bi", name:"Bismut", g:15, p:6, m:"208.98", c:"[Xe] 4f¹⁴ 5d¹⁰ 6s² 6p³", mp:"271 °C", bp:"1564 °C", physical:"Kim loại màu trắng hồng.", chemical:"Có tính khử.", d:"Dùng trong dược phẩm và hệ thống chữa cháy tự động."},
+                    {n:84, s:"Po", name:"Poloni", g:16, p:6, m:"209", c:"[Xe] 4f¹⁴ 5d¹⁰ 6s² 6p⁴", mp:"254 °C", bp:"962 °C", physical:"Chất rắn màu bạc.", chemical:"Tính phóng xạ mạnh.", d:"Nguyên tố phóng xạ cực hiếm và nguy hiểm."},
+                    {n:85, s:"At", name:"Astatin", g:17, p:6, m:"210", c:"[Xe] 4f¹⁴ 5d¹⁰ 6s² 6p⁵", mp:"302 °C", bp:"337 °C", physical:"Chất rắn (dự đoán).", chemical:"Tính phóng xạ mạnh.", d:"Nguyên tố tự nhiên hiếm nhất trên vỏ Trái Đất."},
+                    {n:86, s:"Rn", name:"Radon", g:18, p:6, m:"222", c:"[Xe] 4f¹⁴ 5d¹⁰ 6s² 6p⁶", mp:"-71 °C", bp:"-61 °C", physical:"Khí không màu.", chemical:"Hoàn toàn trơ nhưng phóng xạ.", d:"Khí hiếm phóng xạ, có thể tích tụ trong nhà."},
+                    {n:87, s:"Fr", name:"Fransi", g:1, p:7, m:"223", c:"[Rn] 7s¹", mp:"27 °C", bp:"677 °C", physical:"Kim loại mềm (dự đoán).", chemical:"Tính khử cực mạnh.", d:"Cực kỳ không ổn định, chỉ tồn tại trong thời gian ngắn."},
+                    {n:88, s:"Ra", name:"Radi", g:2, p:7, m:"226", c:"[Rn] 7s²", mp:"700 °C", bp:"1737 °C", physical:"Kim loại màu trắng bạc.", chemical:"Có tính khử.", d:"Từng được dùng làm sơn phát quang cho đồng hồ."},
+                    {n:89, s:"Ac", name:"Actini", g:3, p:7, m:"227", c:"[Rn] 6d¹ 7s²", mp:"1050 °C", bp:"3198 °C", physical:"Kim loại màu bạc.", chemical:"Có tính khử.", d:"Phát ra ánh sáng xanh lam trong bóng tối."},
+                    {n:90, s:"Th", name:"Thori", g:3, p:7, m:"232.04", c:"[Rn] 6d² 7s²", mp:"1750 °C", bp:"4788 °C", physical:"Kim loại màu trắng bạc.", chemical:"Có tính khử.", d:"Nguồn nhiên liệu tiềm năng cho năng lượng hạt nhân sạch."},
+                    {n:91, s:"Pa", name:"Protactini", g:3, p:7, m:"231.04", c:"[Rn] 5f² 6d¹ 7s²", mp:"1568 °C", bp:"N/A", physical:"Kim loại màu bạc.", chemical:"Có tính khử.", d:"Rất hiếm, có độc tính và phóng xạ cao."},
+                    {n:92, s:"U", name:"Urani", g:3, p:7, m:"238.03", c:"[Rn] 5f³ 6d¹ 7s²", mp:"1132 °C", bp:"4131 °C", physical:"Kim loại màu xám.", chemical:"Có tính khử.", d:"Nhiên liệu chính cho các nhà máy điện hạt nhân."},
+                    {n:93, s:"Np", name:"Neptuni", g:3, p:7, m:"237", c:"[Rn] 5f⁴ 6d¹ 7s²", mp:"644 °C", bp:"3902 °C", physical:"Kim loại màu bạc.", chemical:"Có tính khử.", d:"Nguyên tố siêu urani đầu tiên được tạo ra."},
+                    {n:94, s:"Pu", name:"Plutoni", g:3, p:7, m:"244", c:"[Rn] 5f⁶ 7s²", mp:"640 °C", bp:"3228 °C", physical:"Kim loại màu bạc.", chemical:"Có tính khử.", d:"Dùng trong vũ khí hạt nhân và pin tàu vũ trụ."},
+                    {n:95, s:"Am", name:"Americi", g:3, p:7, m:"243", c:"[Rn] 5f⁷ 7s²", mp:"1176 °C", bp:"2607 °C", physical:"Kim loại màu bạc.", chemical:"Có tính khử.", d:"Có trong hầu hết các máy báo khói trong nhà."},
+                    {n:96, s:"Cm", name:"Curi", g:3, p:7, m:"247", c:"[Rn] 5f⁷ 6d¹ 7s²", mp:"1345 °C", bp:"3110 °C", physical:"Kim loại màu bạc.", chemical:"Có tính khử.", d:"Dùng trong thiết bị phân tích trên tàu thám hiểm sao Hỏa."},
+                    {n:97, s:"Bk", name:"Berkeli", g:3, p:7, m:"247", c:"[Rn] 5f⁹ 7s²", mp:"986 °C", bp:"N/A", physical:"Kim loại màu bạc.", chemical:"Có tính khử.", d:"Được tổng hợp tại Đại học California, Berkeley."},
+                    {n:98, s:"Cf", name:"Californi", g:3, p:7, m:"251", c:"[Rn] 5f¹⁰ 7s²", mp:"900 °C", bp:"N/A", physical:"Kim loại màu bạc.", chemical:"Có tính khử.", d:"Nguồn phát neutron mạnh, dùng soi lỗi máy bay."},
+                    {n:99, s:"Es", name:"Einsteini", g:3, p:7, m:"252", c:"[Rn] 5f¹¹ 7s²", mp:"860 °C", bp:"N/A", physical:"Kim loại màu bạc.", chemical:"Có tính khử.", d:"Đặt tên theo nhà vật lý Albert Einstein."},
+                    {n:100, s:"Fm", name:"Fermi", g:3, p:7, m:"257", c:"[Rn] 5f¹² 7s²", mp:"1527 °C", bp:"N/A", physical:"Kim loại màu bạc.", chemical:"Có tính khử.", d:"Tạo ra từ vụ nổ bom hydro đầu tiên."},
+                    {n:101, s:"Md", name:"Mendelevi", g:3, p:7, m:"258", c:"[Rn] 5f¹³ 7s²", mp:"827 °C", bp:"N/A", physical:"Kim loại màu bạc.", chemical:"Có tính khử.", d:"Đặt tên theo cha đẻ bảng tuần hoàn Mendeleev."},
+                    {n:102, s:"No", name:"Nobeli", g:3, p:7, m:"259", c:"[Rn] 5f¹⁴ 7s²", mp:"827 °C", bp:"N/A", physical:"Kim loại màu bạc.", chemical:"Có tính khử.", d:"Đặt tên theo Alfred Nobel."},
+                    {n:103, s:"Lr", name:"Lawrenci", g:3, p:7, m:"262", c:"[Rn] 5f¹⁴ 7s² 7p¹", mp:"1627 °C", bp:"N/A", physical:"Kim loại màu bạc.", chemical:"Có tính khử.", d:"Đặt tên theo Ernest Lawrence, người phát minh máy gia tốc."},
+                    {n:104, s:"Rf", name:"Rutherfordi", g:4, p:7, m:"267", c:"[Rn] 5f¹⁴ 6d² 7s²", mp:"N/A", bp:"N/A", physical:"Nguyên tố siêu nặng.", chemical:"Chỉ tồn tại trong phòng thí nghiệm.", d:"Nguyên tố siêu nặng, chỉ tồn tại trong phòng thí nghiệm."},
+                    {n:105, s:"Db", name:"Dubni", g:5, p:7, m:"268", c:"[Rn] 5f¹⁴ 6d³ 7s²", mp:"N/A", bp:"N/A", physical:"Nguyên tố siêu nặng.", chemical:"Chỉ tồn tại trong phòng thí nghiệm.", d:"Phát hiện tại Nga, không có ứng dụng thực tế."},
+                    {n:106, s:"Sg", name:"Seaborgi", g:6, p:7, m:"271", c:"[Rn] 5f¹⁴ 6d⁴ 7s²", mp:"N/A", bp:"N/A", physical:"Nguyên tố siêu nặng.", chemical:"Chỉ tồn tại trong phòng thí nghiệm.", d:"Nguyên tố nhân tạo có thời gian tồn tại rất ngắn."},
+                    {n:107, s:"Bh", name:"Bohri", g:7, p:7, m:"270", c:"[Rn] 5f¹⁴ 6d⁵ 7s²", mp:"N/A", bp:"N/A", physical:"Nguyên tố siêu nặng.", chemical:"Chỉ tồn tại trong phòng thí nghiệm.", d:"Đặt tên theo nhà vật lý Niels Bohr."},
+                    {n:108, s:"Hs", name:"Hassi", g:8, p:7, m:"277", c:"[Rn] 5f¹⁴ 6d⁶ 7s²", mp:"N/A", bp:"N/A", physical:"Nguyên tố siêu nặng.", chemical:"Chỉ tồn tại trong phòng thí nghiệm.", d:"Đặt tên theo bang Hesse của Đức."},
+                    {n:109, s:"Mt", name:"Meitneri", g:9, p:7, m:"278", c:"[Rn] 5f¹⁴ 6d⁷ 7s²", mp:"N/A", bp:"N/A", physical:"Nguyên tố siêu nặng.", chemical:"Chỉ tồn tại trong phòng thí nghiệm.", d:"Đặt tên theo Lise Meitner."},
+                    {n:110, s:"Ds", name:"Darmstadti", g:10, p:7, m:"281", c:"[Rn] 5f¹⁴ 6d⁸ 7s²", mp:"N/A", bp:"N/A", physical:"Nguyên tố siêu nặng.", chemical:"Chỉ tồn tại trong phòng thí nghiệm.", d:"Chỉ quan sát được vài nguyên tử."},
+                    {n:111, s:"Rg", name:"Roentgeni", g:11, p:7, m:"282", c:"[Rn] 5f¹⁴ 6d⁹ 7s²", mp:"N/A", bp:"N/A", physical:"Nguyên tố siêu nặng.", chemical:"Chỉ tồn tại trong phòng thí nghiệm.", d:"Đặt tên theo người phát hiện tia X."},
+                    {n:112, s:"Cn", name:"Copernici", g:12, p:7, m:"285", c:"[Rn] 5f¹⁴ 6d¹⁰ 7s²", mp:"N/A", bp:"N/A", physical:"Nguyên tố siêu nặng.", chemical:"Chỉ tồn tại trong phòng thí nghiệm.", d:"Đặt tên theo Nicolaus Copernicus."},
+                    {n:113, s:"Nh", name:"Nihoni", g:13, p:7, m:"286", c:"[Rn] 5f¹⁴ 6d¹⁰ 7s² 7p¹", mp:"N/A", bp:"N/A", physical:"Nguyên tố siêu nặng.", chemical:"Chỉ tồn tại trong phòng thí nghiệm.", d:"Nguyên tố đầu tiên do các nhà khoa học Nhật Bản đặt tên."},
+                    {n:114, s:"Fl", name:"Flerovi", g:14, p:7, m:"289", c:"[Rn] 5f¹⁴ 6d¹⁰ 7s² 7p²", mp:"N/A", bp:"N/A", physical:"Nguyên tố siêu nặng.", chemical:"Chỉ tồn tại trong phòng thí nghiệm.", d:"Phát hiện tại phòng thí nghiệm Flerov ở Nga."},
+                    {n:115, s:"Mc", name:"Moscovi", g:15, p:7, m:"290", c:"[Rn] 5f¹⁴ 6d¹⁰ 7s² 7p³", mp:"N/A", bp:"N/A", physical:"Nguyên tố siêu nặng.", chemical:"Chỉ tồn tại trong phòng thí nghiệm.", d:"Đặt tên theo vùng Moskva."},
+                    {n:116, s:"Lv", name:"Livermori", g:16, p:7, m:"293", c:"[Rn] 5f¹⁴ 6d¹⁰ 7s² 7p⁴", mp:"N/A", bp:"N/A", physical:"Nguyên tố siêu nặng.", chemical:"Chỉ tồn tại trong phòng thí nghiệm.", d:"Đặt tên theo thành phố Livermore, Hoa Kỳ."},
+                    {n:117, s:"Ts", name:"Tennessine", g:17, p:7, m:"294", c:"[Rn] 5f¹⁴ 6d¹⁰ 7s² 7p⁵", mp:"N/A", bp:"N/A", physical:"Nguyên tố siêu nặng.", chemical:"Chỉ tồn tại trong phòng thí nghiệm.", d:"Đặt tên theo tiểu bang Tennessee."},
+                    {n:118, s:"Og", name:"Oganesson", g:18, p:7, m:"294", c:"[Rn] 5f¹⁴ 6d¹⁰ 7s² 7p⁶", mp:"N/A", bp:"N/A", physical:"Nguyên tố siêu nặng.", chemical:"Chỉ tồn tại trong phòng thí nghiệm.", d:"Nguyên tố nặng nhất hiện nay, đặt tên theo Yuri Oganessian."}
+]
+        const container = document.getElementById('ptable');
+        const modal = document.getElementById('modal');
+        function getGroupClass(g) {
+            if (g === 1) return 'g1';
+            if (g === 2) return 'g2';
+            if (g >= 3 && g <= 12) return 'g3to12';
+            if (g >= 13 && g <= 18) return `g${g}`;
+            return 'g3to12';
+        }
+        function renderTable(filter = '') {
+            container.innerHTML = '';
+            elements.forEach(el => {
+                const term = filter.toLowerCase();
+                if (term && !el.name.toLowerCase().includes(term) && 
+                    !el.s.toLowerCase().includes(term) && 
+                    !el.n.toString().includes(term)) return;
+
+                const cell = document.createElement('div');
+                cell.className = `cell ${getGroupClass(el.g)}`;
+                if ((el.n >= 57 && el.n <= 71) || (el.n >= 89 && el.n <= 103)) {
+                    cell.classList.add('f-block');
+                }
+                let row = el.p;
+                let col = el.g;
+                if (el.n >= 57 && el.n <= 71) { row = 8; col = el.n - 56 + 2; }
+                else if (el.n >= 89 && el.n <= 103) { row = 9; col = el.n - 88 + 2; }
+                cell.style.gridColumn = col;
+                cell.style.gridRow = row;
+                cell.innerHTML = `
+                    <span class="num">${el.n}</span>
+                    <span class="sym">${el.s}</span>
+                    <span class="mass">${el.m}</span>
+                `;
+                cell.onclick = () => showModal(el);
+                container.appendChild(cell);
+            });
+        }
+        function showModal(el) {
+            document.getElementById('modalTitle').innerHTML = `${el.name} <small style="font-size:0.7em">(${el.s})</small>`;
+            document.getElementById('mNum').textContent = el.n;
+            document.getElementById('mSym').textContent = el.s;
+            document.getElementById('mName').textContent = el.name;
+            document.getElementById('mMass').textContent = el.m;
+            document.getElementById('mGroup').textContent = el.g;
+            document.getElementById('mPeriod').textContent = el.p;
+            document.getElementById('mMelt').textContent = el.mp || '—';
+            document.getElementById('mBoil').textContent = el.bp || '—';
+            document.getElementById('mConfig').textContent = el.c || '—';
+            document.getElementById('mPhysical').textContent = el.physical || '—';
+            document.getElementById('mChemical').textContent = el.chemical || '—';
+            document.getElementById('mDesc').textContent = el.d || 'Chưa có mô tả chi tiết.';
+            modal.style.display = 'block';
+        }
+        function closeModal() {
+            modal.style.display = 'none';
+        }
+
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            renderTable(e.target.value.trim());
+        });
+        renderTable();
+    </script>
+</body>
+</html>
